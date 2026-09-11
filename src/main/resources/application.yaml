@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: ososense-backend
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ososense}
+    username: ${DB_USERNAME:ososense}
+    password: ${DB_PASSWORD:ososense}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+
+app:
+  security:
+    jwt:
+      # Local-only default. Override with a real secret (JWT_SECRET) in every other environment.
+      secret: ${JWT_SECRET:vlBw3pXcBi/t/g6v65zlzSOxKSjw37Ukb3Up5vq1jfdBCZ5lzMiP3meI33nAq9nr}
+      expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
+  mail:
+    from: ${MAIL_FROM:no-reply@osoterra.com}
