@@ -1,0 +1,15 @@
+package com.osoterra.ososense.identityaccess.interfaces.rest.resources;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+public record SignUpResource(
+        @NotBlank @Email String email,
+        @NotBlank @Size(min = 8) String password,
+        @NotBlank String firstName,
+        @NotBlank String lastName,
+        @NotBlank @Pattern(regexp = "FARMER|ADVISOR") String role,
+        String professionalLicenseNumber) {
+}
