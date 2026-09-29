@@ -32,6 +32,11 @@ build/
 ### VS Code ###
 .vscode/
 
+### Secrets ###
+.env
+.env.*
+!.env.example
+
 ### Project context (not part of the codebase) ###
 gitflow-guide.txt
 CONTEXTO_COMPLETO_OSOTERRA_IOT.md
