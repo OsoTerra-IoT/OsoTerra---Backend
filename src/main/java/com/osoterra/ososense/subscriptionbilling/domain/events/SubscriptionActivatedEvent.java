@@ -1,0 +1,10 @@
+package com.osoterra.ososense.subscriptionbilling.domain.events;
+
+import com.osoterra.ososense.shared.DomainEvent;
+import com.osoterra.ososense.subscriptionbilling.domain.model.SubscriptionId;
+
+import java.time.Instant;
+
+public record SubscriptionActivatedEvent(SubscriptionId subscriptionId, Long userAccountId, Instant occurredOn)
+        implements DomainEvent {
+}
