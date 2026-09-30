@@ -7,8 +7,8 @@ import com.osoterra.ososense.iam.domain.repositories.UserAccountRepository;
 import com.osoterra.ososense.iam.domain.services.PasswordHashingService;
 import com.osoterra.ososense.iam.domain.services.ResetPasswordCommand;
 import com.osoterra.ososense.iam.domain.services.ResetPasswordCommandService;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
