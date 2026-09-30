@@ -2,6 +2,7 @@ package com.osoterra.ososense;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,9 +33,13 @@ class AdvisorFlowIntegrationTest extends IntegrationTest {
         String advisor = signUpAndSignIn("diego@example.com", "ADVISOR", "CIP-123456");
         Integer farmerId = JsonPath.read(body(mvc.perform(auth(get("/api/v1/users/me"), farmer))), "$.id");
 
-        mvc.perform(auth(json(post("/api/v1/farms"), """
+        String farm = body(mvc.perform(auth(json(post("/api/v1/farms"), """
                 {"name":"Los Olivos","department":"Lima","province":"Huaura","district":"Huacho"}"""), farmer))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated()));
+        Integer farmId = JsonPath.read(farm, "$.id");
+        mvc.perform(auth(json(put("/api/v1/farms/" + farmId), """
+                {"name":"Tomado","department":"Lima","province":"Huaura","district":"Huacho"}"""), advisor))
+                .andExpect(status().isForbidden());
         mvc.perform(auth(get("/api/v1/farms").param("ownerId", farmerId.toString()), advisor))
                 .andExpect(status().isForbidden());
 

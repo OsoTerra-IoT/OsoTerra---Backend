@@ -3,6 +3,7 @@ package com.osoterra.ososense;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -57,6 +58,12 @@ class MainFlowIntegrationTest extends IntegrationTest {
                 {"farmId":%d,"name":"Lote Norte","areaHectares":2.5,"latitude":-11.5,"longitude":-77.2}"""
                 .formatted(farmId)), token)).andExpect(status().isCreated()));
         Integer plotId = JsonPath.read(plot, "$.id");
+        mvc.perform(auth(json(put("/api/v1/plots/" + plotId), """
+                {"name":"Lote Norte A","areaHectares":2.7,"latitude":-11.5,"longitude":-77.2}"""), token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Lote Norte A"));
+        mvc.perform(auth(json(put("/api/v1/farms/" + farmId), """
+                {"name":"Fundo Santa Rosa","department":"Lima","province":"Huaral","district":"Aucallama"}"""), token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("Fundo Santa Rosa"));
         mvc.perform(auth(json(post("/api/v1/plots/" + plotId + "/crop"), """
                 {"cropId":%d}""".formatted(grapeIds.getFirst())), token)).andExpect(status().isOk());
 
