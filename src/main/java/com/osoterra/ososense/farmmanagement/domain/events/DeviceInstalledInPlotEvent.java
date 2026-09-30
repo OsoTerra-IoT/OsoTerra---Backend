@@ -2,7 +2,7 @@ package com.osoterra.ososense.farmmanagement.domain.events;
 
 import com.osoterra.ososense.farmmanagement.domain.model.DeviceId;
 import com.osoterra.ososense.farmmanagement.domain.model.PlotId;
-import com.osoterra.ososense.shared.DomainEvent;
+import com.osoterra.ososense.shared.domain.events.DomainEvent;
 
 import java.time.Instant;
 
