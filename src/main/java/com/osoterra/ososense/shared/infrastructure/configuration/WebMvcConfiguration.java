@@ -1,5 +1,6 @@
-package com.osoterra.ososense.shared.web;
+package com.osoterra.ososense.shared.infrastructure.configuration;
 
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserIdArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
