@@ -1,7 +1,7 @@
 package com.osoterra.ososense.subscriptionbilling.domain.model;
 
-import com.osoterra.ososense.shared.AggregateRoot;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.model.AggregateRoot;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import com.osoterra.ososense.subscriptionbilling.domain.events.SubscriptionActivatedEvent;
 import com.osoterra.ososense.subscriptionbilling.domain.events.SubscriptionSuspendedEvent;
 

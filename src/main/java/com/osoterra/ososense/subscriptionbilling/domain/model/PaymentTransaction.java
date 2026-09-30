@@ -1,6 +1,6 @@
 package com.osoterra.ososense.subscriptionbilling.domain.model;
 
-import com.osoterra.ososense.shared.AggregateRoot;
+import com.osoterra.ososense.shared.domain.model.AggregateRoot;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
