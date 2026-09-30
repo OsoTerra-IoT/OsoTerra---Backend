@@ -11,8 +11,8 @@ import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.PlotRe
 import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.PlotReportResourceAssembler;
 import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.ReportSectionResource;
 import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.ReportSectionResourceAssembler;
-import com.osoterra.ososense.shared.EntityNotFoundException;
-import com.osoterra.ososense.shared.web.CurrentUserId;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

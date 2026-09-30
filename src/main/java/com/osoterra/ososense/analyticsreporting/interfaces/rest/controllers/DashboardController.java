@@ -5,7 +5,7 @@ import com.osoterra.ososense.analyticsreporting.domain.gateways.PlotStructureLoo
 import com.osoterra.ososense.analyticsreporting.domain.gateways.PlotSummary;
 import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.AlertSummaryResource;
 import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.PlotDashboardResource;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
