@@ -14,7 +14,7 @@ import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.AssignCrop
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.PlotResource;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.PlotResourceAssembler;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterPlotResource;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

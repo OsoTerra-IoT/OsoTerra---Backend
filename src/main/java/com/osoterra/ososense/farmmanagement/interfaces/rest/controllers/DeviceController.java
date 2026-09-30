@@ -11,7 +11,7 @@ import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.AttachDevi
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.DeviceResource;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.DeviceResourceAssembler;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterDeviceResource;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

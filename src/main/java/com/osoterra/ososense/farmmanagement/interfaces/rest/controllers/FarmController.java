@@ -8,8 +8,8 @@ import com.osoterra.ososense.farmmanagement.domain.services.RegisterFarmCommandS
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.FarmResource;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.FarmResourceAssembler;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterFarmResource;
-import com.osoterra.ososense.shared.EntityNotFoundException;
-import com.osoterra.ososense.shared.web.CurrentUserId;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
