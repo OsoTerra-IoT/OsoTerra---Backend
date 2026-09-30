@@ -13,8 +13,8 @@ import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.Correcti
 import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.RegisterCorrectiveActionResource;
 import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.SalinityAlertResource;
 import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.SalinityAlertResourceAssembler;
-import com.osoterra.ososense.shared.EntityNotFoundException;
-import com.osoterra.ososense.shared.web.CurrentUserId;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

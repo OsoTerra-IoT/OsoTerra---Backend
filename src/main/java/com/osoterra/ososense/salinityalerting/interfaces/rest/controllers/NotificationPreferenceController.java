@@ -7,7 +7,7 @@ import com.osoterra.ososense.salinityalerting.domain.services.SetNotificationPre
 import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.NotificationPreferenceResource;
 import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.NotificationPreferenceResourceAssembler;
 import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.SetNotificationPreferenceResource;
-import com.osoterra.ososense.shared.web.CurrentUserId;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
