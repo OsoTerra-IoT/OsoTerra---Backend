@@ -1,6 +1,6 @@
 package com.osoterra.ososense.iam.domain.model;
 
-import com.osoterra.ososense.shared.ValueObject;
+import com.osoterra.ososense.shared.domain.model.ValueObject;
 
 import java.util.Objects;
 

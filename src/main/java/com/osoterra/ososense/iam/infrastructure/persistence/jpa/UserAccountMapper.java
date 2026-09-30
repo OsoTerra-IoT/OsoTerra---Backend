@@ -16,11 +16,15 @@ final class UserAccountMapper {
         ProfessionalLicense license = entity.getProfessionalLicense() == null
                 ? null
                 : new ProfessionalLicense(entity.getProfessionalLicense());
+        PasswordHash passwordHash = entity.getPasswordHash() == null
+                ? null
+                : new PasswordHash(entity.getPasswordHash(), entity.getHashAlgorithm());
 
         return UserAccount.reconstruct(
                 new UserAccountId(entity.getId()),
                 new EmailAddress(entity.getEmail()),
-                new PasswordHash(entity.getPasswordHash(), entity.getHashAlgorithm()),
+                passwordHash,
+                entity.getGoogleAccountId(),
                 new PersonName(entity.getFirstName(), entity.getLastName()),
                 entity.getRole(),
                 license,
@@ -33,8 +37,9 @@ final class UserAccountMapper {
         return new UserAccountJpaEntity(
                 id,
                 account.getEmail().value(),
-                account.getPasswordHash().value(),
-                account.getPasswordHash().algorithm(),
+                account.getPasswordHash().map(PasswordHash::value).orElse(null),
+                account.getPasswordHash().map(PasswordHash::algorithm).orElse(null),
+                account.getGoogleAccountId().orElse(null),
                 account.getName().firstName(),
                 account.getName().lastName(),
                 account.getRole(),

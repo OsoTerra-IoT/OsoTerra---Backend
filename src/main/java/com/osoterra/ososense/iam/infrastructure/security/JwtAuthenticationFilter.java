@@ -1,6 +1,5 @@
 package com.osoterra.ososense.iam.infrastructure.security;
 
-import com.osoterra.ososense.iam.domain.model.UserAccountId;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +35,7 @@ class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwtTokenService.validate(token).ifPresent(principal -> {
                 var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + principal.role()));
                 var authentication = new UsernamePasswordAuthenticationToken(
-                        new UserAccountId(principal.userId()), null, authorities);
+                        principal.userId(), null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             });
         }

@@ -1,7 +1,6 @@
 package com.osoterra.ososense.iam.interfaces.rest.controllers;
 
 import com.osoterra.ososense.iam.domain.model.AdvisoryLink;
-import com.osoterra.ososense.iam.domain.model.UserAccountId;
 import com.osoterra.ososense.iam.domain.services.AcceptAdvisoryLinkCommand;
 import com.osoterra.ososense.iam.domain.services.AcceptAdvisoryLinkCommandService;
 import com.osoterra.ososense.iam.domain.services.RequestAdvisoryLinkCommand;
@@ -11,6 +10,7 @@ import com.osoterra.ososense.iam.domain.services.RevokeAdvisoryLinkCommandServic
 import com.osoterra.ososense.iam.interfaces.rest.resources.AdvisoryLinkResource;
 import com.osoterra.ososense.iam.interfaces.rest.resources.AdvisoryLinkResourceAssembler;
 import com.osoterra.ososense.iam.interfaces.rest.resources.RequestAdvisoryLinkResource;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,24 +42,24 @@ class AdvisoryLinkController {
 
     @PostMapping
     ResponseEntity<AdvisoryLinkResource> request(
-            @Valid @RequestBody RequestAdvisoryLinkResource request, @CurrentUserId UserAccountId advisorId) {
+            @Valid @RequestBody RequestAdvisoryLinkResource request, @CurrentUserId Long advisorId) {
         AdvisoryLink link = requestAdvisoryLinkCommandService.handle(
-                new RequestAdvisoryLinkCommand(advisorId.value(), request.farmerId()));
+                new RequestAdvisoryLinkCommand(advisorId, request.farmerId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(advisoryLinkResourceAssembler.toResource(link));
     }
 
     @PostMapping("/{id}/acceptance")
-    ResponseEntity<AdvisoryLinkResource> accept(@PathVariable Long id, @CurrentUserId UserAccountId requestingUserId) {
+    ResponseEntity<AdvisoryLinkResource> accept(@PathVariable Long id, @CurrentUserId Long requestingUserId) {
         AdvisoryLink link =
-                acceptAdvisoryLinkCommandService.handle(new AcceptAdvisoryLinkCommand(id, requestingUserId.value()));
+                acceptAdvisoryLinkCommandService.handle(new AcceptAdvisoryLinkCommand(id, requestingUserId));
         return ResponseEntity.ok(advisoryLinkResourceAssembler.toResource(link));
     }
 
     @PostMapping("/{id}/revocation")
-    ResponseEntity<AdvisoryLinkResource> revoke(@PathVariable Long id, @CurrentUserId UserAccountId requestingUserId) {
+    ResponseEntity<AdvisoryLinkResource> revoke(@PathVariable Long id, @CurrentUserId Long requestingUserId) {
         AdvisoryLink link =
-                revokeAdvisoryLinkCommandService.handle(new RevokeAdvisoryLinkCommand(id, requestingUserId.value()));
+                revokeAdvisoryLinkCommandService.handle(new RevokeAdvisoryLinkCommand(id, requestingUserId));
         return ResponseEntity.ok(advisoryLinkResourceAssembler.toResource(link));
     }
 }

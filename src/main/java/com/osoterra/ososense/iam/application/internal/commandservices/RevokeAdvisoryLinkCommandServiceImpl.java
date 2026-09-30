@@ -5,8 +5,8 @@ import com.osoterra.ososense.iam.domain.model.AdvisoryLinkId;
 import com.osoterra.ososense.iam.domain.repositories.AdvisoryLinkRepository;
 import com.osoterra.ososense.iam.domain.services.RevokeAdvisoryLinkCommand;
 import com.osoterra.ososense.iam.domain.services.RevokeAdvisoryLinkCommandService;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

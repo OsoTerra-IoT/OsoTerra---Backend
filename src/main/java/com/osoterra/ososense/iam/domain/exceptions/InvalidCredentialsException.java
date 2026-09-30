@@ -1,6 +1,6 @@
 package com.osoterra.ososense.iam.domain.exceptions;
 
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 
 /**
  * Raised when authentication fails. Carries a generic message on purpose: it must not

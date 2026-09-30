@@ -35,11 +35,14 @@ public class UserAccountJpaEntity {
     @Column(nullable = false, unique = true, length = 120)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash")
     private String passwordHash;
 
-    @Column(name = "hash_algorithm", nullable = false, length = 60)
+    @Column(name = "hash_algorithm", length = 60)
     private String hashAlgorithm;
+
+    @Column(name = "google_account_id", unique = true, length = 255)
+    private String googleAccountId;
 
     @Column(name = "first_name", nullable = false, length = 80)
     private String firstName;

@@ -8,7 +8,7 @@ import com.osoterra.ososense.iam.domain.repositories.UserAccountRepository;
 import com.osoterra.ososense.iam.domain.services.PasswordHashingService;
 import com.osoterra.ososense.iam.domain.services.RegisterUserCommand;
 import com.osoterra.ososense.iam.domain.services.RegisterUserCommandService;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.springframework.stereotype.Service;
 
 @Service

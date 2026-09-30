@@ -2,7 +2,7 @@ package com.osoterra.ososense.iam.domain.model;
 
 import com.osoterra.ososense.iam.domain.events.AdvisoryLinkAcceptedEvent;
 import com.osoterra.ososense.iam.domain.events.AdvisoryLinkRevokedEvent;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

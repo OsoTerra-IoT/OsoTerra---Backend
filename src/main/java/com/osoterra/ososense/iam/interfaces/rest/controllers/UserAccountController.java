@@ -4,7 +4,8 @@ import com.osoterra.ososense.iam.domain.model.UserAccountId;
 import com.osoterra.ososense.iam.domain.services.UserAccountQueryService;
 import com.osoterra.ososense.iam.interfaces.rest.resources.UserAccountResource;
 import com.osoterra.ososense.iam.interfaces.rest.resources.UserAccountResourceAssembler;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,9 +24,9 @@ class UserAccountController {
     }
 
     @GetMapping("/me")
-    UserAccountResource getCurrentUser(@CurrentUserId UserAccountId id) {
+    UserAccountResource getCurrentUser(@CurrentUserId Long id) {
         return userAccountQueryService
-                .findById(id)
+                .findById(new UserAccountId(id))
                 .map(userAccountResourceAssembler::toResource)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found for id " + id));
     }
