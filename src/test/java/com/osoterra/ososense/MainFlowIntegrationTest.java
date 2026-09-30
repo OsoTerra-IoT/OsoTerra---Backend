@@ -84,6 +84,18 @@ class MainFlowIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$[0].status").value("OPEN"));
         mvc.perform(auth(get("/api/v1/dashboard/plots/" + plotId), token)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.recentAlerts.length()").value(1));
+
+        String alerts = body(mvc.perform(auth(get("/api/v1/salinity-alerts").param("plotId", plotId.toString()), token)));
+        Integer alertId = JsonPath.read(alerts, "$[0].id");
+        mvc.perform(auth(get("/api/v1/salinity-alerts/" + alertId + "/corrective-actions"), token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(0));
+        mvc.perform(auth(json(post("/api/v1/salinity-alerts/" + alertId + "/corrective-actions"), """
+                {"actionType":"LEACHING","executedAt":"2026-09-30","notes":"Riego de lavado"}"""), token))
+                .andExpect(status().isCreated());
+        mvc.perform(auth(get("/api/v1/salinity-alerts/" + alertId + "/corrective-actions"), token))
+                .andExpect(jsonPath("$[0].actionType").value("LEACHING"));
+        mvc.perform(auth(get("/api/v1/salinity-alerts/" + alertId), token))
+                .andExpect(jsonPath("$.status").value("RESOLVED"));
     }
 
     private static MockHttpServletRequestBuilder json(MockHttpServletRequestBuilder request, String content) {
