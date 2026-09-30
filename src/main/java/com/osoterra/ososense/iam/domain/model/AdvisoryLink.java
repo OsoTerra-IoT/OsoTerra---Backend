@@ -2,8 +2,8 @@ package com.osoterra.ososense.iam.domain.model;
 
 import com.osoterra.ososense.iam.domain.events.AdvisoryLinkAcceptedEvent;
 import com.osoterra.ososense.iam.domain.events.AdvisoryLinkRevokedEvent;
-import com.osoterra.ososense.shared.AggregateRoot;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.model.AggregateRoot;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

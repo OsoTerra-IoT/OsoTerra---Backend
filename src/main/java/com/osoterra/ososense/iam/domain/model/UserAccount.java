@@ -2,7 +2,7 @@ package com.osoterra.ososense.iam.domain.model;
 
 import com.osoterra.ososense.iam.domain.events.UserRegisteredEvent;
 import com.osoterra.ososense.iam.domain.services.PasswordHashingService;
-import com.osoterra.ososense.shared.AggregateRoot;
+import com.osoterra.ososense.shared.domain.model.AggregateRoot;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
