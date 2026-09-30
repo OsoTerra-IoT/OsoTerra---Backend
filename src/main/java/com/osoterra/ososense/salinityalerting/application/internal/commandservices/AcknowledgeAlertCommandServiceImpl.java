@@ -5,7 +5,7 @@ import com.osoterra.ososense.salinityalerting.domain.model.SalinityAlertId;
 import com.osoterra.ososense.salinityalerting.domain.repositories.SalinityAlertRepository;
 import com.osoterra.ososense.salinityalerting.domain.services.AcknowledgeAlertCommand;
 import com.osoterra.ososense.salinityalerting.domain.services.AcknowledgeAlertCommandService;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

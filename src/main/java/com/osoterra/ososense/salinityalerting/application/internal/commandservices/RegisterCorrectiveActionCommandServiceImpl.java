@@ -8,7 +8,7 @@ import com.osoterra.ososense.salinityalerting.domain.repositories.CorrectiveActi
 import com.osoterra.ososense.salinityalerting.domain.repositories.SalinityAlertRepository;
 import com.osoterra.ososense.salinityalerting.domain.services.RegisterCorrectiveActionCommand;
 import com.osoterra.ososense.salinityalerting.domain.services.RegisterCorrectiveActionCommandService;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
