@@ -10,7 +10,7 @@ import com.osoterra.ososense.iam.domain.services.RevokeAdvisoryLinkCommandServic
 import com.osoterra.ososense.iam.interfaces.rest.resources.AdvisoryLinkResource;
 import com.osoterra.ososense.iam.interfaces.rest.resources.AdvisoryLinkResourceAssembler;
 import com.osoterra.ososense.iam.interfaces.rest.resources.RequestAdvisoryLinkResource;
-import com.osoterra.ososense.shared.web.CurrentUserId;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

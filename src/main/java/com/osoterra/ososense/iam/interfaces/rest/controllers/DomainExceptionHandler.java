@@ -1,8 +1,8 @@
 package com.osoterra.ososense.iam.interfaces.rest.controllers;
 
 import com.osoterra.ososense.iam.interfaces.rest.resources.ErrorResource;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
