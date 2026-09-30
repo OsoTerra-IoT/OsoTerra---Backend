@@ -10,8 +10,8 @@ import com.osoterra.ososense.subscriptionbilling.domain.services.SubscriptionBil
 import com.osoterra.ososense.subscriptionbilling.interfaces.rest.resources.RequestSubscriptionResource;
 import com.osoterra.ososense.subscriptionbilling.interfaces.rest.resources.SubscriptionResource;
 import com.osoterra.ososense.subscriptionbilling.interfaces.rest.resources.SubscriptionResourceAssembler;
-import com.osoterra.ososense.shared.EntityNotFoundException;
-import com.osoterra.ososense.shared.web.CurrentUserId;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
