@@ -5,7 +5,9 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import com.osoterra.ososense.shared.web.CurrentUserId;
 import java.util.List;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class ApiPlatformConfiguration {
 
     public static final String BEARER_SCHEME = "bearerAuth";
+
+    static {
+        // The current user comes from the token, never from the request, so Swagger must not ask for it.
+        SpringDocUtils.getConfig().addAnnotationsToIgnore(CurrentUserId.class);
+    }
 
     @Bean
     OpenAPI osoSenseOpenApi() {

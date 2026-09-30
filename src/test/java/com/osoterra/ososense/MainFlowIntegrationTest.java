@@ -32,7 +32,8 @@ class MainFlowIntegrationTest extends IntegrationTest {
     @Test
     void farmerMonitorsAPlotFromSignUpToAlert() throws Exception {
         mvc.perform(get("/api/v1/subscription-plans")).andExpect(status().isOk());
-        mvc.perform(get("/v3/api-docs")).andExpect(status().isOk());
+        mvc.perform(get("/v3/api-docs")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.paths['/api/v1/farms/mine'].get.parameters").doesNotExist());
         mvc.perform(get("/api/v1/users/me")).andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").exists());
 
@@ -64,6 +65,8 @@ class MainFlowIntegrationTest extends IntegrationTest {
         Integer deviceId = JsonPath.read(device, "$.id");
         mvc.perform(auth(json(post("/api/v1/devices/" + deviceId + "/attachment"), """
                 {"plotId":%d}""".formatted(plotId)), token)).andExpect(status().isOk());
+        mvc.perform(auth(get("/api/v1/devices").param("plotId", plotId.toString()), token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(deviceId));
 
         String batch = """
                 {"deviceId":%d,"readings":[{"rawConductivityDsM":2.5,"compensatedConductivityDsM":2.4,
