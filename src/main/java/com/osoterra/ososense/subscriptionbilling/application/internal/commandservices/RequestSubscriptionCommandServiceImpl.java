@@ -7,7 +7,7 @@ import com.osoterra.ososense.subscriptionbilling.domain.repositories.Subscriptio
 import com.osoterra.ososense.subscriptionbilling.domain.repositories.SubscriptionRepository;
 import com.osoterra.ososense.subscriptionbilling.domain.services.RequestSubscriptionCommand;
 import com.osoterra.ososense.subscriptionbilling.domain.services.RequestSubscriptionCommandService;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
