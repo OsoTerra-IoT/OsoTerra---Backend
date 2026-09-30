@@ -10,17 +10,22 @@ import com.osoterra.ososense.farmmanagement.domain.services.DeactivatePlotComman
 import com.osoterra.ososense.farmmanagement.domain.services.FarmManagementQueryService;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterPlotCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterPlotCommandService;
+import com.osoterra.ososense.farmmanagement.domain.services.UpdatePlotCommand;
+import com.osoterra.ososense.farmmanagement.domain.services.UpdatePlotCommandService;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.AssignCropToPlotResource;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.PlotResource;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.PlotResourceAssembler;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterPlotResource;
+import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.UpdatePlotResource;
 import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.web.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,6 +38,7 @@ import java.util.List;
 class PlotController {
 
     private final RegisterPlotCommandService registerPlotCommandService;
+    private final UpdatePlotCommandService updatePlotCommandService;
     private final AssignCropToPlotCommandService assignCropToPlotCommandService;
     private final DeactivatePlotCommandService deactivatePlotCommandService;
     private final FarmManagementQueryService farmManagementQueryService;
@@ -40,11 +46,13 @@ class PlotController {
 
     PlotController(
             RegisterPlotCommandService registerPlotCommandService,
+            UpdatePlotCommandService updatePlotCommandService,
             AssignCropToPlotCommandService assignCropToPlotCommandService,
             DeactivatePlotCommandService deactivatePlotCommandService,
             FarmManagementQueryService farmManagementQueryService,
             PlotResourceAssembler plotResourceAssembler) {
         this.registerPlotCommandService = registerPlotCommandService;
+        this.updatePlotCommandService = updatePlotCommandService;
         this.assignCropToPlotCommandService = assignCropToPlotCommandService;
         this.deactivatePlotCommandService = deactivatePlotCommandService;
         this.farmManagementQueryService = farmManagementQueryService;
@@ -56,6 +64,14 @@ class PlotController {
         Plot plot = registerPlotCommandService.handle(new RegisterPlotCommand(
                 request.farmId(), request.name(), request.areaHectares(), request.latitude(), request.longitude()));
         return ResponseEntity.status(HttpStatus.CREATED).body(plotResourceAssembler.toResource(plot));
+    }
+
+    @PutMapping("/{id}")
+    PlotResource update(
+            @PathVariable Long id, @Valid @RequestBody UpdatePlotResource request, @CurrentUserId Long userId) {
+        Plot plot = updatePlotCommandService.handle(new UpdatePlotCommand(
+                id, userId, request.name(), request.areaHectares(), request.latitude(), request.longitude()));
+        return plotResourceAssembler.toResource(plot);
     }
 
     @PostMapping("/{id}/crop")

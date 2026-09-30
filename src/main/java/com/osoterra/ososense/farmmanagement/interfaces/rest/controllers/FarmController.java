@@ -6,6 +6,8 @@ import com.osoterra.ososense.farmmanagement.domain.model.FarmId;
 import com.osoterra.ososense.farmmanagement.domain.services.FarmManagementQueryService;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterFarmCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterFarmCommandService;
+import com.osoterra.ososense.farmmanagement.domain.services.UpdateFarmCommand;
+import com.osoterra.ososense.farmmanagement.domain.services.UpdateFarmCommandService;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.FarmResource;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.FarmResourceAssembler;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterFarmResource;
@@ -18,6 +20,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,13 +36,16 @@ class FarmController {
     private final FarmManagementQueryService farmManagementQueryService;
     private final FarmResourceAssembler farmResourceAssembler;
     private final AdvisoryAccessLookup advisoryAccessLookup;
+    private final UpdateFarmCommandService updateFarmCommandService;
 
     FarmController(
             RegisterFarmCommandService registerFarmCommandService,
+            UpdateFarmCommandService updateFarmCommandService,
             FarmManagementQueryService farmManagementQueryService,
             FarmResourceAssembler farmResourceAssembler,
             AdvisoryAccessLookup advisoryAccessLookup) {
         this.registerFarmCommandService = registerFarmCommandService;
+        this.updateFarmCommandService = updateFarmCommandService;
         this.farmManagementQueryService = farmManagementQueryService;
         this.farmResourceAssembler = farmResourceAssembler;
         this.advisoryAccessLookup = advisoryAccessLookup;
@@ -51,6 +57,14 @@ class FarmController {
         Farm farm = registerFarmCommandService.handle(new RegisterFarmCommand(
                 ownerId, request.name(), request.department(), request.province(), request.district()));
         return ResponseEntity.status(HttpStatus.CREATED).body(farmResourceAssembler.toResource(farm));
+    }
+
+    @PutMapping("/{id}")
+    FarmResource update(
+            @PathVariable Long id, @Valid @RequestBody RegisterFarmResource request, @CurrentUserId Long userId) {
+        Farm farm = updateFarmCommandService.handle(new UpdateFarmCommand(
+                id, userId, request.name(), request.department(), request.province(), request.district()));
+        return farmResourceAssembler.toResource(farm);
     }
 
     @GetMapping("/mine")
