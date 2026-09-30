@@ -12,7 +12,7 @@ import com.osoterra.ososense.analyticsreporting.domain.services.ComputeSalinityT
 import com.osoterra.ososense.analyticsreporting.domain.services.ComputeSalinityTrendCommandService;
 import com.osoterra.ososense.analyticsreporting.domain.services.GeneratePlotReportCommand;
 import com.osoterra.ososense.analyticsreporting.domain.services.GeneratePlotReportCommandService;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
