@@ -2,6 +2,7 @@ package com.osoterra.ososense.farmmanagement.interfaces.rest.controllers;
 
 import com.osoterra.ososense.farmmanagement.domain.model.Device;
 import com.osoterra.ososense.farmmanagement.domain.model.DeviceId;
+import com.osoterra.ososense.farmmanagement.domain.model.PlotId;
 import com.osoterra.ososense.farmmanagement.domain.services.AttachDeviceToPlotCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.AttachDeviceToPlotCommandService;
 import com.osoterra.ososense.farmmanagement.domain.services.FarmManagementQueryService;
@@ -13,6 +14,7 @@ import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.DeviceReso
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterDeviceResource;
 import com.osoterra.ososense.shared.EntityNotFoundException;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -53,6 +56,19 @@ class DeviceController {
             @PathVariable Long id, @Valid @RequestBody AttachDeviceToPlotResource request) {
         Device device = attachDeviceToPlotCommandService.handle(new AttachDeviceToPlotCommand(id, request.plotId()));
         return ResponseEntity.ok(deviceResourceAssembler.toResource(device));
+    }
+
+    /**
+     * Lists the device installed in a plot: an empty list when none is attached yet, since
+     * a plot holds at most one device.
+     */
+    @GetMapping
+    List<DeviceResource> byPlot(@RequestParam Long plotId) {
+        return farmManagementQueryService
+                .findDeviceByPlotId(new PlotId(plotId))
+                .map(deviceResourceAssembler::toResource)
+                .stream()
+                .toList();
     }
 
     @GetMapping("/{id}")

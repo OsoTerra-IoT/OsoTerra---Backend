@@ -2,6 +2,7 @@ package com.osoterra.ososense.farmmanagement.infrastructure.persistence.jpa;
 
 import com.osoterra.ososense.farmmanagement.domain.model.Device;
 import com.osoterra.ososense.farmmanagement.domain.model.DeviceId;
+import com.osoterra.ososense.farmmanagement.domain.model.PlotId;
 import com.osoterra.ososense.farmmanagement.domain.repositories.DeviceRepository;
 import org.springframework.stereotype.Repository;
 
@@ -30,6 +31,11 @@ class JpaDeviceRepository implements DeviceRepository {
     @Override
     public Optional<Device> findByActivationCode(String activationCode) {
         return springDataRepository.findByActivationCode(activationCode).map(DeviceMapper::toDomain);
+    }
+
+    @Override
+    public Optional<Device> findByPlotId(PlotId plotId) {
+        return springDataRepository.findByPlotId(plotId.value()).map(DeviceMapper::toDomain);
     }
 
     @Override

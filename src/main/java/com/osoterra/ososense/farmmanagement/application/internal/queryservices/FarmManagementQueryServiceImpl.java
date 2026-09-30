@@ -63,6 +63,11 @@ class FarmManagementQueryServiceImpl implements FarmManagementQueryService {
     }
 
     @Override
+    public Optional<Device> findDeviceByPlotId(PlotId plotId) {
+        return deviceRepository.findByPlotId(plotId);
+    }
+
+    @Override
     public List<Crop> findAllCrops() {
         return cropRepository.findAll();
     }
