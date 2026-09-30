@@ -1,6 +1,6 @@
 package com.osoterra.ososense.farmmanagement.domain.model;
 
-import com.osoterra.ososense.shared.ValueObject;
+import com.osoterra.ososense.shared.domain.model.ValueObject;
 
 import java.math.BigDecimal;
 import java.util.Objects;

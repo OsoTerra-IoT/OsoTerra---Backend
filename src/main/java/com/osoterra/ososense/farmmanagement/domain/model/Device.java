@@ -1,8 +1,8 @@
 package com.osoterra.ososense.farmmanagement.domain.model;
 
 import com.osoterra.ososense.farmmanagement.domain.events.DeviceInstalledInPlotEvent;
-import com.osoterra.ososense.shared.AggregateRoot;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.model.AggregateRoot;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 
 import java.math.BigDecimal;
 import java.time.Instant;
