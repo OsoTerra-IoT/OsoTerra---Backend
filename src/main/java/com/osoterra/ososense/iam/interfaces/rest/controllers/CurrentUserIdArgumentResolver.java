@@ -2,6 +2,7 @@ package com.osoterra.ososense.iam.interfaces.rest.controllers;
 
 import com.osoterra.ososense.iam.domain.model.UserAccountId;
 import org.springframework.core.MethodParameter;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -25,7 +26,7 @@ class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UserAccountId userId)) {
-            throw new IllegalStateException("No authenticated user id available for this request");
+            throw new AuthenticationCredentialsNotFoundException("No authenticated user for this request");
         }
         return userId;
     }
