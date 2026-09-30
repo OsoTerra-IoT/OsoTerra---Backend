@@ -2,7 +2,7 @@ package com.osoterra.ososense.salinityalerting.domain.events;
 
 import com.osoterra.ososense.salinityalerting.domain.model.AlertSeverity;
 import com.osoterra.ososense.salinityalerting.domain.model.SalinityAlertId;
-import com.osoterra.ososense.shared.DomainEvent;
+import com.osoterra.ososense.shared.domain.events.DomainEvent;
 
 import java.time.Instant;
 

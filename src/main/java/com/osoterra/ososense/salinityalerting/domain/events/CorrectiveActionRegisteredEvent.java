@@ -1,7 +1,7 @@
 package com.osoterra.ososense.salinityalerting.domain.events;
 
 import com.osoterra.ososense.salinityalerting.domain.model.CorrectiveActionId;
-import com.osoterra.ososense.shared.DomainEvent;
+import com.osoterra.ososense.shared.domain.events.DomainEvent;
 
 import java.time.Instant;
 
