@@ -5,7 +5,7 @@ import com.osoterra.ososense.farmmanagement.domain.model.PlotId;
 import com.osoterra.ososense.farmmanagement.domain.repositories.PlotRepository;
 import com.osoterra.ososense.farmmanagement.domain.services.DeactivatePlotCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.DeactivatePlotCommandService;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -4,7 +4,7 @@ import com.osoterra.ososense.farmmanagement.domain.model.Device;
 import com.osoterra.ososense.farmmanagement.domain.repositories.DeviceRepository;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterDeviceCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterDeviceCommandService;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.springframework.stereotype.Service;
 
 @Service

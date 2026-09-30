@@ -8,7 +8,7 @@ import com.osoterra.ososense.farmmanagement.domain.repositories.CropRepository;
 import com.osoterra.ososense.farmmanagement.domain.repositories.PlotRepository;
 import com.osoterra.ososense.farmmanagement.domain.services.AssignCropToPlotCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.AssignCropToPlotCommandService;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

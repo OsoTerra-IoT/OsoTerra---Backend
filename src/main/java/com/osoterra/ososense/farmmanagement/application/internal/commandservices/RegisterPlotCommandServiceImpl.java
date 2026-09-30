@@ -8,7 +8,7 @@ import com.osoterra.ososense.farmmanagement.domain.repositories.FarmRepository;
 import com.osoterra.ososense.farmmanagement.domain.repositories.PlotRepository;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterPlotCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterPlotCommandService;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
