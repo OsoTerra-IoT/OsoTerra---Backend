@@ -1,6 +1,6 @@
 package com.osoterra.ososense.subscriptionbilling.domain.model;
 
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import com.osoterra.ososense.subscriptionbilling.domain.events.SubscriptionActivatedEvent;
 import org.junit.jupiter.api.Test;
 
