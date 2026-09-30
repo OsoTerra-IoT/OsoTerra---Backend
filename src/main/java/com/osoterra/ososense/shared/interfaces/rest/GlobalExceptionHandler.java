@@ -2,6 +2,7 @@ package com.osoterra.ososense.shared.interfaces.rest;
 
 import com.osoterra.ososense.shared.BusinessRuleViolationException;
 import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.ForbiddenOperationException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.core.Ordered;
@@ -49,8 +50,8 @@ class GlobalExceptionHandler {
                 .body(new ApiErrorResource("The request has invalid fields", fields));
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    ResponseEntity<ApiErrorResource> handleForbidden(AccessDeniedException ex) {
+    @ExceptionHandler({AccessDeniedException.class, ForbiddenOperationException.class})
+    ResponseEntity<ApiErrorResource> handleForbidden(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiErrorResource.of(ex.getMessage()));
     }
 
