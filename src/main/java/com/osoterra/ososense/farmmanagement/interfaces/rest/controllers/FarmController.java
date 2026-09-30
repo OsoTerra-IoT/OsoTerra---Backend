@@ -1,5 +1,6 @@
 package com.osoterra.ososense.farmmanagement.interfaces.rest.controllers;
 
+import com.osoterra.ososense.farmmanagement.domain.gateways.AdvisoryAccessLookup;
 import com.osoterra.ososense.farmmanagement.domain.model.Farm;
 import com.osoterra.ososense.farmmanagement.domain.model.FarmId;
 import com.osoterra.ososense.farmmanagement.domain.services.FarmManagementQueryService;
@@ -13,11 +14,13 @@ import com.osoterra.ososense.shared.web.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,14 +32,17 @@ class FarmController {
     private final RegisterFarmCommandService registerFarmCommandService;
     private final FarmManagementQueryService farmManagementQueryService;
     private final FarmResourceAssembler farmResourceAssembler;
+    private final AdvisoryAccessLookup advisoryAccessLookup;
 
     FarmController(
             RegisterFarmCommandService registerFarmCommandService,
             FarmManagementQueryService farmManagementQueryService,
-            FarmResourceAssembler farmResourceAssembler) {
+            FarmResourceAssembler farmResourceAssembler,
+            AdvisoryAccessLookup advisoryAccessLookup) {
         this.registerFarmCommandService = registerFarmCommandService;
         this.farmManagementQueryService = farmManagementQueryService;
         this.farmResourceAssembler = farmResourceAssembler;
+        this.advisoryAccessLookup = advisoryAccessLookup;
     }
 
     @PostMapping
@@ -49,6 +55,19 @@ class FarmController {
 
     @GetMapping("/mine")
     List<FarmResource> mine(@CurrentUserId Long ownerId) {
+        return farmManagementQueryService.findFarmsByOwnerId(ownerId).stream()
+                .map(farmResourceAssembler::toResource)
+                .toList();
+    }
+
+    /**
+     * Farms of a given farmer, readable by the farmer and by advisors linked to them.
+     */
+    @GetMapping
+    List<FarmResource> byOwner(@RequestParam Long ownerId, @CurrentUserId Long userId) {
+        if (!ownerId.equals(userId) && !advisoryAccessLookup.isLinked(userId, ownerId)) {
+            throw new AccessDeniedException("No active advisory link with farmer " + ownerId);
+        }
         return farmManagementQueryService.findFarmsByOwnerId(ownerId).stream()
                 .map(farmResourceAssembler::toResource)
                 .toList();
