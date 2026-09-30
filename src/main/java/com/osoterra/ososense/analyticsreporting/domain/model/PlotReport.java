@@ -1,6 +1,6 @@
 package com.osoterra.ososense.analyticsreporting.domain.model;
 
-import com.osoterra.ososense.shared.AggregateRoot;
+import com.osoterra.ososense.shared.domain.model.AggregateRoot;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
