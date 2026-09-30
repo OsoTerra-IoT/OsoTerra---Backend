@@ -1,8 +1,8 @@
 package com.osoterra.ososense.salinityalerting.domain.model;
 
 import com.osoterra.ososense.salinityalerting.domain.events.AlertGeneratedEvent;
-import com.osoterra.ososense.shared.AggregateRoot;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.model.AggregateRoot;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

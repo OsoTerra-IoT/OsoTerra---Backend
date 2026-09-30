@@ -1,6 +1,6 @@
 package com.osoterra.ososense.salinityalerting.domain.model;
 
-import com.osoterra.ososense.shared.AggregateRoot;
+import com.osoterra.ososense.shared.domain.model.AggregateRoot;
 
 import java.util.Objects;
 import java.util.Optional;
