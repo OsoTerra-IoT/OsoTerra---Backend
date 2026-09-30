@@ -1,8 +1,8 @@
 package com.osoterra.ososense.subscriptionbilling.interfaces.rest.controllers;
 
 import com.osoterra.ososense.subscriptionbilling.interfaces.rest.resources.ErrorResource;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * Translates this context's domain errors into coherent HTTP responses.
  */
 @RestControllerAdvice(basePackages = "com.osoterra.ososense.subscriptionbilling.interfaces")
-class DomainExceptionHandler {
+class SubscriptionBillingDomainExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     ResponseEntity<ErrorResource> handleNotFound(EntityNotFoundException ex) {
