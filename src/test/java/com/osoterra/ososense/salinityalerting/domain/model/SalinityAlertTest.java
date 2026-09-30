@@ -1,6 +1,6 @@
 package com.osoterra.ososense.salinityalerting.domain.model;
 
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
