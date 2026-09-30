@@ -1,7 +1,7 @@
 package com.osoterra.ososense.farmmanagement.domain.model;
 
 import com.osoterra.ososense.farmmanagement.domain.events.DeviceInstalledInPlotEvent;
-import com.osoterra.ososense.shared.BusinessRuleViolationException;
+import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
