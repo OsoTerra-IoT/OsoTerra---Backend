@@ -1,6 +1,7 @@
 package com.osoterra.ososense.shared.web;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -24,7 +25,7 @@ class CurrentUserIdArgumentResolver implements HandlerMethodArgumentResolver {
             WebDataBinderFactory binderFactory) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof Long userId)) {
-            throw new IllegalStateException("No authenticated user id available for this request");
+            throw new AuthenticationCredentialsNotFoundException("No authenticated user for this request");
         }
         return userId;
     }
