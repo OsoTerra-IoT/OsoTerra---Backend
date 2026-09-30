@@ -2,7 +2,7 @@ package com.osoterra.ososense.soilmonitoring.application.internal.commandservice
 
 import com.osoterra.ososense.salinityalerting.domain.services.EvaluateReadingCommand;
 import com.osoterra.ososense.salinityalerting.domain.services.EvaluateReadingCommandService;
-import com.osoterra.ososense.shared.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import com.osoterra.ososense.soilmonitoring.domain.gateways.DeviceLocationLookup;
 import com.osoterra.ososense.soilmonitoring.domain.model.ReadingBatch;
 import com.osoterra.ososense.soilmonitoring.domain.model.SoilReading;
