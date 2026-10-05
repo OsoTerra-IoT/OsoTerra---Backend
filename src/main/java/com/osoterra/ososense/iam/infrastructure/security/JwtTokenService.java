@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -29,8 +32,29 @@ public class JwtTokenService implements TokenIssuer {
     public JwtTokenService(
             @Value("${app.security.jwt.secret}") String base64Secret,
             @Value("${app.security.jwt.expiration-minutes:60}") long expirationMinutes) {
-        this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(base64Secret));
+        this.signingKey = Keys.hmacShaKeyFor(keyBytes(base64Secret));
         this.validity = Duration.ofMinutes(expirationMinutes);
+    }
+
+    /**
+     * Uses the secret as Base64 when it decodes to the 256 bits HS256 needs; otherwise the
+     * secret is treated as a passphrase and stretched to 256 bits with SHA-256, so a plain
+     * text {@code JWT_SECRET} set on the hosting platform still yields a valid key.
+     */
+    static byte[] keyBytes(String secret) {
+        try {
+            byte[] decoded = Decoders.BASE64.decode(secret);
+            if (decoded.length >= 32) {
+                return decoded;
+            }
+        } catch (RuntimeException notBase64) {
+            // Fall through to the passphrase derivation.
+        }
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(secret.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 is not available", e);
+        }
     }
 
     @Override
