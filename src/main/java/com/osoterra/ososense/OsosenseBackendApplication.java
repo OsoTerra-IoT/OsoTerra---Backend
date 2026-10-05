@@ -16,6 +16,11 @@ public class OsosenseBackendApplication {
 
     public static void main(String[] args) {
         loadDotenv();
+        PlatformDatabaseUrl.toDatasourceSettings(System.getenv()).forEach((key, value) -> {
+            if (System.getProperty(key) == null) {
+                System.setProperty(key, value);
+            }
+        });
         SpringApplication.run(OsosenseBackendApplication.class, args);
     }
 
