@@ -80,4 +80,16 @@ class SalinityAlertController {
                 id, request.actionType(), request.executedAt(), request.notes(), userId));
         return ResponseEntity.status(HttpStatus.CREATED).body(correctiveActionResourceAssembler.toResource(action));
     }
+
+    /**
+     * Corrective actions registered for an alert: empty while it is unresolved, since
+     * registering one resolves the alert.
+     */
+    @GetMapping("/{id}/corrective-actions")
+    List<CorrectiveActionResource> correctiveActions(@PathVariable Long id) {
+        return salinityAlertingQueryService.findCorrectiveActionByAlertId(id)
+                .map(correctiveActionResourceAssembler::toResource)
+                .stream()
+                .toList();
+    }
 }

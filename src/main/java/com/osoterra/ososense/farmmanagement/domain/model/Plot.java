@@ -18,9 +18,9 @@ public final class Plot extends AggregateRoot<PlotId> {
 
     private final FarmId farmId;
     private CropId cropId;
-    private final String name;
-    private final BigDecimal areaHectares;
-    private final GeoCoordinates coordinates;
+    private String name;
+    private BigDecimal areaHectares;
+    private GeoCoordinates coordinates;
     private boolean isActive;
     private final LocalDateTime createdAt;
 
@@ -61,6 +61,25 @@ public final class Plot extends AggregateRoot<PlotId> {
         Objects.requireNonNull(cropId, "cropId");
         this.cropId = cropId;
         registerEvent(new CropAssignedToPlotEvent(getId(), cropId, Instant.now()));
+    }
+
+    /**
+     * Corrects the plot's name, surveyed area or location. Its farm, crop and lifecycle
+     * change only through their own operations.
+     */
+    public void updateDetails(String name, BigDecimal areaHectares, GeoCoordinates coordinates) {
+        Objects.requireNonNull(name, "name");
+        Objects.requireNonNull(areaHectares, "areaHectares");
+        Objects.requireNonNull(coordinates, "coordinates");
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("A plot's name must not be blank");
+        }
+        if (areaHectares.signum() <= 0) {
+            throw new IllegalArgumentException("A plot's area must be greater than zero");
+        }
+        this.name = name;
+        this.areaHectares = areaHectares;
+        this.coordinates = coordinates;
     }
 
     public void deactivate() {

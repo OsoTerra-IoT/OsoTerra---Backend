@@ -24,6 +24,8 @@ public interface FarmManagementQueryService {
 
     Optional<Device> findDeviceById(DeviceId id);
 
+    Optional<Device> findDeviceByPlotId(PlotId plotId);
+
     List<Crop> findAllCrops();
 
     Optional<Crop> findCropById(CropId id);
