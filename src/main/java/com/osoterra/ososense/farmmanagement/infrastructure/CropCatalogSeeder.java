@@ -31,7 +31,9 @@ public class CropCatalogSeeder implements ApplicationRunner {
             new CatalogEntry("Maíz", new BigDecimal("1.7"), "Sensible"),
             new CatalogEntry("Papa", new BigDecimal("1.7"), "Sensible"),
             new CatalogEntry("Uva", new BigDecimal("1.5"), "Sensible"),
+            new CatalogEntry("Arándano", new BigDecimal("1.5"), "Sensible"),
             new CatalogEntry("Cebolla", new BigDecimal("1.2"), "Sensible"),
+            new CatalogEntry("Palta", new BigDecimal("1.1"), "Sensible"),
             new CatalogEntry("Fresa", new BigDecimal("1.0"), "Sensible"));
 
     private final CropRepository cropRepository;

@@ -11,6 +11,8 @@ import com.osoterra.ososense.salinityalerting.domain.repositories.NotificationPr
 import com.osoterra.ososense.salinityalerting.domain.repositories.SalinityAlertRepository;
 import com.osoterra.ososense.salinityalerting.domain.services.EvaluateReadingCommand;
 import com.osoterra.ososense.salinityalerting.domain.services.EvaluateReadingCommandService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +26,8 @@ import java.util.Optional;
  */
 @Service
 class EvaluateReadingCommandServiceImpl implements EvaluateReadingCommandService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EvaluateReadingCommandServiceImpl.class);
 
     private final CropThresholdLookup cropThresholdLookup;
     private final PlotOwnerLookup plotOwnerLookup;
@@ -77,8 +81,20 @@ class EvaluateReadingCommandServiceImpl implements EvaluateReadingCommandService
         for (NotificationDispatcher dispatcher : notificationDispatchers) {
             if (preference.getChannel() == NotificationChannel.BOTH
                     || preference.getChannel() == dispatcher.supportedChannel()) {
-                dispatcher.dispatch(alert, ownerId, preference.getPushDeviceToken().orElse(null));
+                dispatchSafely(dispatcher, alert, ownerId, preference.getPushDeviceToken().orElse(null));
             }
+        }
+    }
+
+    /**
+     * Delivery is best effort: the alert is already stored and visible in the apps, so a
+     * mail or push outage must not reject the telemetry batch that raised it.
+     */
+    private void dispatchSafely(NotificationDispatcher dispatcher, SalinityAlert alert, Long ownerId, String pushToken) {
+        try {
+            dispatcher.dispatch(alert, ownerId, pushToken);
+        } catch (RuntimeException ex) {
+            LOGGER.warn("Could not deliver alert {} via {}: {}", alert.getId(), dispatcher.supportedChannel(), ex.getMessage());
         }
     }
 }

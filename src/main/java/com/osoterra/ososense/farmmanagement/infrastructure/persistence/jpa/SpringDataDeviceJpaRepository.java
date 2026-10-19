@@ -8,5 +8,7 @@ interface SpringDataDeviceJpaRepository extends JpaRepository<DeviceJpaEntity, L
 
     Optional<DeviceJpaEntity> findByActivationCode(String activationCode);
 
+    Optional<DeviceJpaEntity> findByPlotId(Long plotId);
+
     boolean existsByActivationCode(String activationCode);
 }

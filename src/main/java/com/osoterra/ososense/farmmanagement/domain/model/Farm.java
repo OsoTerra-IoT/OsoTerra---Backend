@@ -13,10 +13,10 @@ import java.util.Objects;
 public final class Farm extends AggregateRoot<FarmId> {
 
     private final Long ownerId;
-    private final String name;
-    private final String department;
-    private final String province;
-    private final String district;
+    private String name;
+    private String department;
+    private String province;
+    private String district;
     private final LocalDateTime createdAt;
 
     private Farm(
@@ -44,6 +44,20 @@ public final class Farm extends AggregateRoot<FarmId> {
             FarmId id, Long ownerId, String name, String department, String province, String district,
             LocalDateTime createdAt) {
         return new Farm(id, ownerId, name, department, province, district, createdAt);
+    }
+
+    /**
+     * Renames the farm or corrects its location. The owner never changes.
+     */
+    public void updateDetails(String name, String department, String province, String district) {
+        Objects.requireNonNull(name, "name");
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("A farm's name must not be blank");
+        }
+        this.name = name;
+        this.department = department;
+        this.province = province;
+        this.district = district;
     }
 
     public Long getOwnerId() {
