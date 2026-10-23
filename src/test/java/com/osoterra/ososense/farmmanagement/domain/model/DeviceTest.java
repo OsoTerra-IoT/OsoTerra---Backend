@@ -4,6 +4,8 @@ import com.osoterra.ososense.farmmanagement.domain.events.DeviceInstalledInPlotE
 import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -58,5 +60,34 @@ class DeviceTest {
         device.markOffline();
 
         assertThat(device.getStatus()).isEqualTo(DeviceStatus.UNASSIGNED);
+    }
+
+    @Test
+    void recordReadingKeepsTheNewestCaptureAsLastSeen() {
+        Device device = Device.registerWithActivationCode("ACT-0006");
+        device.attachToPlot(new PlotId(1L));
+        LocalDateTime newest = LocalDateTime.of(2026, 10, 22, 10, 15);
+
+        device.recordReading(newest);
+        device.recordReading(newest.minusMinutes(30));
+
+        assertThat(device.getLastSeenAt()).contains(newest);
+        assertThat(device.getStatus()).isEqualTo(DeviceStatus.ACTIVE);
+    }
+
+    @Test
+    void recordReadingBringsAnOfflineDeviceBackOnline() {
+        Device device = Device.registerWithActivationCode("ACT-0007");
+        device.attachToPlot(new PlotId(1L));
+        device.markOffline();
+
+        device.recordReading(LocalDateTime.of(2026, 10, 22, 11, 0));
+
+        assertThat(device.getStatus()).isEqualTo(DeviceStatus.ACTIVE);
+    }
+
+    @Test
+    void registerWithActivationCodeUsesTheFirmwareReadingInterval() {
+        assertThat(Device.registerWithActivationCode("ACT-0008").getReadingIntervalMinutes()).isEqualTo(15);
     }
 }
