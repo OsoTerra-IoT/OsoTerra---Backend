@@ -9,4 +9,7 @@ import java.util.Optional;
 public interface DeviceLocationLookup {
 
     Optional<Long> findPlotIdForDevice(Long deviceId);
+
+    /** Minutes between two readings of the device, as configured in Farm Management. */
+    Optional<Integer> findReadingIntervalMinutes(Long deviceId);
 }

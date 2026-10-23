@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 public final class Device extends AggregateRoot<DeviceId> {
 
-    private static final int DEFAULT_READING_INTERVAL_MINUTES = 30;
+    private static final int DEFAULT_READING_INTERVAL_MINUTES = 15;
     private static final BigDecimal DEFAULT_CALIBRATION_FACTOR = BigDecimal.ONE;
 
     private PlotId plotId;
@@ -27,7 +27,7 @@ public final class Device extends AggregateRoot<DeviceId> {
     private final Integer batteryLevel;
     private final String firmwareVersion;
     private final int readingIntervalMinutes;
-    private final LocalDateTime lastSeenAt;
+    private LocalDateTime lastSeenAt;
     private final LocalDateTime createdAt;
 
     private Device(
@@ -78,6 +78,21 @@ public final class Device extends AggregateRoot<DeviceId> {
     public void markOffline() {
         if (status == DeviceStatus.ACTIVE) {
             this.status = DeviceStatus.OFFLINE;
+        }
+    }
+
+    /**
+     * A reading taken at {@code capturedAt} reached the platform: the device was seen then and,
+     * if it had gone quiet, it is back online. Older readings synchronized late by the Edge
+     * Service do not move the last-seen time backwards.
+     */
+    public void recordReading(LocalDateTime capturedAt) {
+        Objects.requireNonNull(capturedAt, "capturedAt");
+        if (lastSeenAt == null || capturedAt.isAfter(lastSeenAt)) {
+            this.lastSeenAt = capturedAt;
+        }
+        if (status == DeviceStatus.OFFLINE) {
+            this.status = DeviceStatus.ACTIVE;
         }
     }
 
