@@ -107,6 +107,13 @@ public class SensorAndAlertSteps {
         assertThat(JsonPath.<String>read(alerts, "$[0].status")).isEqualTo("OPEN");
     }
 
+    @And("the device was last seen at {string}")
+    public void theDeviceWasLastSeenAt(String capturedAt) throws Exception {
+        String device = api.getJson("/api/v1/devices/" + deviceId, token).getContentAsString();
+        assertThat(JsonPath.<String>read(device, "$.lastSeenAt")).startsWith(capturedAt);
+        assertThat(JsonPath.<String>read(device, "$.status")).isEqualTo("ACTIVE");
+    }
+
     private void registerDevice(String activationCode) throws Exception {
         deviceId = JsonPath.read(api.postJson("/api/v1/devices", """
                 {"activationCode":"%s"}""".formatted(activationCode), token).getContentAsString(), "$.id");

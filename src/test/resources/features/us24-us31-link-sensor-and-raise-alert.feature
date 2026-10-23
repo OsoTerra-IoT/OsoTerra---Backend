@@ -16,6 +16,7 @@ Feature: US24 and US31 Link a sensor and raise a salinity alert
     And the request carries a valid "X-Edge-Api-Key"
     Then the batch is synchronized
     And an open salinity alert with severity "CRITICAL" exists for the plot
+    And the device was last seen at "2026-09-30T08:00:00"
 
   Scenario: Batch without the Edge key
     Given a farmer with a plot of table grape
