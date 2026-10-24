@@ -5,11 +5,13 @@ import com.osoterra.ososense.iam.domain.model.AdvisoryLinkId;
 import com.osoterra.ososense.iam.domain.repositories.AdvisoryLinkRepository;
 import com.osoterra.ososense.iam.domain.services.AcceptAdvisoryLinkCommand;
 import com.osoterra.ososense.iam.domain.services.AcceptAdvisoryLinkCommandService;
-import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.ForbiddenOperationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class AcceptAdvisoryLinkCommandServiceImpl implements AcceptAdvisoryLinkCommandService {
 
     private final AdvisoryLinkRepository advisoryLinkRepository;
@@ -26,7 +28,7 @@ class AcceptAdvisoryLinkCommandServiceImpl implements AcceptAdvisoryLinkCommandS
                 .orElseThrow(() -> new EntityNotFoundException("Advisory link not found for id " + id));
 
         if (!link.getFarmerId().value().equals(command.requestingUserId())) {
-            throw new BusinessRuleViolationException("Only the farmer can accept this advisory link");
+            throw new ForbiddenOperationException("Only the farmer can accept this advisory link");
         }
 
         link.accept();

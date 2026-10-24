@@ -7,6 +7,7 @@ import com.osoterra.ososense.analyticsreporting.domain.repositories.SalinityTren
 import com.osoterra.ososense.analyticsreporting.domain.services.ComputeSalinityTrendCommand;
 import com.osoterra.ososense.analyticsreporting.domain.services.ComputeSalinityTrendCommandService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +20,7 @@ import java.util.List;
  * ordinary least squares regression against the day offset from the period start.
  */
 @Service
+@Transactional
 class ComputeSalinityTrendCommandServiceImpl implements ComputeSalinityTrendCommandService {
 
     private final SoilReadingSeriesLookup soilReadingSeriesLookup;

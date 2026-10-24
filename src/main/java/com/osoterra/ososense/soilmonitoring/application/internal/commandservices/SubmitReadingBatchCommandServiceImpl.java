@@ -13,6 +13,7 @@ import com.osoterra.ososense.soilmonitoring.domain.services.ReadingPayload;
 import com.osoterra.ososense.soilmonitoring.domain.services.SubmitReadingBatchCommand;
 import com.osoterra.ososense.soilmonitoring.domain.services.SubmitReadingBatchCommandService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
  * Farm Management as the device's last-seen time.
  */
 @Service
+@Transactional
 class SubmitReadingBatchCommandServiceImpl implements SubmitReadingBatchCommandService {
 
     private final ReadingBatchRepository readingBatchRepository;

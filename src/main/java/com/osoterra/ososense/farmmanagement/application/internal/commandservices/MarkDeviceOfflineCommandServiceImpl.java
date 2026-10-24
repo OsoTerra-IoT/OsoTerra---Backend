@@ -7,8 +7,10 @@ import com.osoterra.ososense.farmmanagement.domain.services.MarkDeviceOfflineCom
 import com.osoterra.ososense.farmmanagement.domain.services.MarkDeviceOfflineCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class MarkDeviceOfflineCommandServiceImpl implements MarkDeviceOfflineCommandService {
 
     private final DeviceRepository deviceRepository;

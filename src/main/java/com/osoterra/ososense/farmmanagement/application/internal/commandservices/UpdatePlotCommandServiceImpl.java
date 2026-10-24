@@ -11,11 +11,13 @@ import com.osoterra.ososense.farmmanagement.domain.services.UpdatePlotCommandSer
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import com.osoterra.ososense.shared.domain.exceptions.ForbiddenOperationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Changes a plot's name, area and location. Only the owner of its farm may do it.
  */
 @Service
+@Transactional
 class UpdatePlotCommandServiceImpl implements UpdatePlotCommandService {
 
     private final PlotRepository plotRepository;

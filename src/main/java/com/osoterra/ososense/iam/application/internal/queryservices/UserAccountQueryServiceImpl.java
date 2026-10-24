@@ -1,5 +1,6 @@
 package com.osoterra.ososense.iam.application.internal.queryservices;
 
+import com.osoterra.ososense.iam.domain.model.AdvisoryLink;
 import com.osoterra.ososense.iam.domain.model.UserAccount;
 import com.osoterra.ososense.iam.domain.model.UserAccountId;
 import com.osoterra.ososense.iam.domain.repositories.AdvisoryLinkRepository;
@@ -33,6 +34,11 @@ class UserAccountQueryServiceImpl implements UserAccountQueryService {
                 .map(link -> userAccountRepository.findById(link.getAdvisorId()))
                 .flatMap(Optional::stream)
                 .toList();
+    }
+
+    @Override
+    public List<AdvisoryLink> findOpenAdvisoryLinks(UserAccountId userId) {
+        return advisoryLinkRepository.findOpenByParticipant(userId);
     }
 
     @Override

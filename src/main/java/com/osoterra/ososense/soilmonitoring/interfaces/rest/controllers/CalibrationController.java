@@ -7,6 +7,8 @@ import com.osoterra.ososense.soilmonitoring.domain.services.SoilMonitoringQueryS
 import com.osoterra.ososense.soilmonitoring.interfaces.rest.resources.CalibrationRecordResource;
 import com.osoterra.ososense.soilmonitoring.interfaces.rest.resources.CalibrationRecordResourceAssembler;
 import com.osoterra.ososense.soilmonitoring.interfaces.rest.resources.RegisterCalibrationRecordResource;
+import com.osoterra.ososense.shared.domain.services.PlotAccessPolicy;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,18 +32,23 @@ class CalibrationController {
     private final RegisterCalibrationRecordCommandService registerCalibrationRecordCommandService;
     private final SoilMonitoringQueryService soilMonitoringQueryService;
     private final CalibrationRecordResourceAssembler calibrationRecordResourceAssembler;
+    private final PlotAccessPolicy plotAccessPolicy;
 
     CalibrationController(
             RegisterCalibrationRecordCommandService registerCalibrationRecordCommandService,
             SoilMonitoringQueryService soilMonitoringQueryService,
-            CalibrationRecordResourceAssembler calibrationRecordResourceAssembler) {
+            CalibrationRecordResourceAssembler calibrationRecordResourceAssembler,
+            PlotAccessPolicy plotAccessPolicy) {
         this.registerCalibrationRecordCommandService = registerCalibrationRecordCommandService;
         this.soilMonitoringQueryService = soilMonitoringQueryService;
         this.calibrationRecordResourceAssembler = calibrationRecordResourceAssembler;
+        this.plotAccessPolicy = plotAccessPolicy;
     }
 
     @PostMapping
-    ResponseEntity<CalibrationRecordResource> register(@Valid @RequestBody RegisterCalibrationRecordResource request) {
+    ResponseEntity<CalibrationRecordResource> register(
+            @Valid @RequestBody RegisterCalibrationRecordResource request, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkDeviceRead(userId, request.deviceId());
         CalibrationRecord record = registerCalibrationRecordCommandService.handle(new RegisterCalibrationRecordCommand(
                 request.deviceId(), request.labConductivityDsM(), request.samplingDate(), request.laboratoryName(),
                 request.deviceReadingAtSampling()));
@@ -49,7 +56,8 @@ class CalibrationController {
     }
 
     @GetMapping
-    List<CalibrationRecordResource> byDevice(@RequestParam Long deviceId) {
+    List<CalibrationRecordResource> byDevice(@RequestParam Long deviceId, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkDeviceRead(userId, deviceId);
         return soilMonitoringQueryService.findCalibrationRecordsByDeviceId(deviceId).stream()
                 .map(calibrationRecordResourceAssembler::toResource)
                 .toList();

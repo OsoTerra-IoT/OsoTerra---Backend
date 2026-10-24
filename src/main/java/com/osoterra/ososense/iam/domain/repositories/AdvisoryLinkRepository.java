@@ -16,4 +16,7 @@ public interface AdvisoryLinkRepository {
     List<AdvisoryLink> findActiveByFarmerId(UserAccountId farmerId);
 
     List<AdvisoryLink> findActiveByAdvisorId(UserAccountId advisorId);
+
+    /** Pending and accepted links where the user is the advisor or the farmer, newest first. */
+    List<AdvisoryLink> findOpenByParticipant(UserAccountId userId);
 }

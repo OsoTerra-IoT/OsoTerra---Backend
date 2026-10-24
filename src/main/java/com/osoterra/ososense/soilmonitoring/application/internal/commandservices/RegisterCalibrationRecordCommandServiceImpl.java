@@ -5,8 +5,10 @@ import com.osoterra.ososense.soilmonitoring.domain.repositories.CalibrationRecor
 import com.osoterra.ososense.soilmonitoring.domain.services.RegisterCalibrationRecordCommand;
 import com.osoterra.ososense.soilmonitoring.domain.services.RegisterCalibrationRecordCommandService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class RegisterCalibrationRecordCommandServiceImpl implements RegisterCalibrationRecordCommandService {
 
     private final CalibrationRecordRepository calibrationRecordRepository;

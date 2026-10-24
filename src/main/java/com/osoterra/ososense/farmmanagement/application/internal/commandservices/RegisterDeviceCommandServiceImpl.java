@@ -6,8 +6,10 @@ import com.osoterra.ososense.farmmanagement.domain.services.RegisterDeviceComman
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterDeviceCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class RegisterDeviceCommandServiceImpl implements RegisterDeviceCommandService {
 
     private final DeviceRepository deviceRepository;

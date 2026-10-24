@@ -10,12 +10,14 @@ import com.osoterra.ososense.salinityalerting.domain.services.RegisterCorrective
 import com.osoterra.ososense.salinityalerting.domain.services.RegisterCorrectiveActionCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Registering a corrective action means the producer addressed the alert, so the alert
  * is resolved as part of the same command.
  */
 @Service
+@Transactional
 class RegisterCorrectiveActionCommandServiceImpl implements RegisterCorrectiveActionCommandService {
 
     private final SalinityAlertRepository salinityAlertRepository;
@@ -37,11 +39,11 @@ class RegisterCorrectiveActionCommandServiceImpl implements RegisterCorrectiveAc
         CorrectiveAction action = CorrectiveAction.register(
                 command.salinityAlertId(), CorrectiveActionType.valueOf(command.actionType()), command.executedAt(),
                 command.notes(), command.registeredBy());
-        CorrectiveAction saved = correctiveActionRepository.save(action);
 
+        // Resolve first: an already resolved alert fails here, before any corrective action is stored.
         alert.resolve();
         salinityAlertRepository.save(alert);
 
-        return saved;
+        return correctiveActionRepository.save(action);
     }
 }

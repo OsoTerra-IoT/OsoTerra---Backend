@@ -7,8 +7,10 @@ import com.osoterra.ososense.salinityalerting.domain.services.AcknowledgeAlertCo
 import com.osoterra.ososense.salinityalerting.domain.services.AcknowledgeAlertCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class AcknowledgeAlertCommandServiceImpl implements AcknowledgeAlertCommandService {
 
     private final SalinityAlertRepository salinityAlertRepository;

@@ -8,5 +8,9 @@ public record AdvisoryLinkResource(
         Long farmerId,
         String status,
         LocalDateTime requestedAt,
-        LocalDateTime respondedAt) {
+        LocalDateTime respondedAt,
+        String advisorName,
+        String advisorEmail,
+        String farmerName,
+        String farmerEmail) {
 }

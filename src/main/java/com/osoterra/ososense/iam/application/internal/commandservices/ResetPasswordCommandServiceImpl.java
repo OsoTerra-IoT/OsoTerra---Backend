@@ -10,8 +10,10 @@ import com.osoterra.ososense.iam.domain.services.ResetPasswordCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class ResetPasswordCommandServiceImpl implements ResetPasswordCommandService {
 
     private final PasswordResetTokenStore passwordResetTokenStore;

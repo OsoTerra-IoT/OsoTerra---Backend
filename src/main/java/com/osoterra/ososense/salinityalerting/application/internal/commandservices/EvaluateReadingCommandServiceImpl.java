@@ -14,6 +14,7 @@ import com.osoterra.ososense.salinityalerting.domain.services.EvaluateReadingCom
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Optional;
  * dispatches a notification per the plot owner's preferences.
  */
 @Service
+@Transactional
 class EvaluateReadingCommandServiceImpl implements EvaluateReadingCommandService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EvaluateReadingCommandServiceImpl.class);

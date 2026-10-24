@@ -13,6 +13,7 @@ import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.Report
 import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.ReportSectionResourceAssembler;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
+import com.osoterra.ososense.shared.domain.services.PlotAccessPolicy;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,50 +37,62 @@ class PlotReportController {
     private final PdfReportExporter pdfReportExporter;
     private final PlotReportResourceAssembler plotReportResourceAssembler;
     private final ReportSectionResourceAssembler reportSectionResourceAssembler;
+    private final PlotAccessPolicy plotAccessPolicy;
 
     PlotReportController(
             GeneratePlotReportCommandService generatePlotReportCommandService,
             AnalyticsReportingQueryService analyticsReportingQueryService,
             PdfReportExporter pdfReportExporter,
             PlotReportResourceAssembler plotReportResourceAssembler,
-            ReportSectionResourceAssembler reportSectionResourceAssembler) {
+            ReportSectionResourceAssembler reportSectionResourceAssembler,
+            PlotAccessPolicy plotAccessPolicy) {
         this.generatePlotReportCommandService = generatePlotReportCommandService;
         this.analyticsReportingQueryService = analyticsReportingQueryService;
         this.pdfReportExporter = pdfReportExporter;
         this.plotReportResourceAssembler = plotReportResourceAssembler;
         this.reportSectionResourceAssembler = reportSectionResourceAssembler;
+        this.plotAccessPolicy = plotAccessPolicy;
     }
 
     @PostMapping
     ResponseEntity<PlotReportResource> generate(
             @Valid @RequestBody GeneratePlotReportResource request, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotRead(userId, request.plotId());
         PlotReport report = generatePlotReportCommandService.handle(new GeneratePlotReportCommand(
                 request.plotId(), userId, request.periodStart(), request.periodEnd()));
         return ResponseEntity.status(HttpStatus.CREATED).body(plotReportResourceAssembler.toResource(report));
     }
 
     @GetMapping
-    List<PlotReportResource> byPlot(@RequestParam Long plotId) {
+    List<PlotReportResource> byPlot(@RequestParam Long plotId, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotRead(userId, plotId);
         return analyticsReportingQueryService.findReportsByPlotId(plotId).stream()
                 .map(plotReportResourceAssembler::toResource)
                 .toList();
     }
 
     @GetMapping("/{id}/sections")
-    List<ReportSectionResource> sections(@PathVariable Long id) {
+    List<ReportSectionResource> sections(@PathVariable Long id, @CurrentUserId Long userId) {
+        readableReport(id, userId);
         return analyticsReportingQueryService.findSectionsByReportId(new PlotReportId(id)).stream()
                 .map(reportSectionResourceAssembler::toResource)
                 .toList();
     }
 
     @GetMapping(value = "/{id}/export", produces = MediaType.APPLICATION_PDF_VALUE)
-    ResponseEntity<byte[]> export(@PathVariable Long id) {
+    ResponseEntity<byte[]> export(@PathVariable Long id, @CurrentUserId Long userId) {
         PlotReportId reportId = new PlotReportId(id);
-        PlotReport report = analyticsReportingQueryService
-                .findReportById(reportId)
-                .orElseThrow(() -> new EntityNotFoundException("Plot report not found for id " + id));
+        PlotReport report = readableReport(id, userId);
         var sections = analyticsReportingQueryService.findSectionsByReportId(reportId);
         byte[] pdf = pdfReportExporter.export(report, sections);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(pdf);
+    }
+
+    private PlotReport readableReport(Long id, Long userId) {
+        PlotReport report = analyticsReportingQueryService
+                .findReportById(new PlotReportId(id))
+                .orElseThrow(() -> new EntityNotFoundException("Plot report not found for id " + id));
+        plotAccessPolicy.checkPlotRead(userId, report.getPlotId());
+        return report;
     }
 }

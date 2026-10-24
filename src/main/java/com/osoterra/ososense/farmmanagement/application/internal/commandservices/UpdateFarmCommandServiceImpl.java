@@ -8,11 +8,13 @@ import com.osoterra.ososense.farmmanagement.domain.services.UpdateFarmCommandSer
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import com.osoterra.ososense.shared.domain.exceptions.ForbiddenOperationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Changes a farm's name and location. Only its owner may do it.
  */
 @Service
+@Transactional
 class UpdateFarmCommandServiceImpl implements UpdateFarmCommandService {
 
     private final FarmRepository farmRepository;

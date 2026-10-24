@@ -10,8 +10,10 @@ import com.osoterra.ososense.iam.domain.services.RegisterUserCommand;
 import com.osoterra.ososense.iam.domain.services.RegisterUserCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class RegisterUserCommandServiceImpl implements RegisterUserCommandService {
 
     private final UserAccountRepository userAccountRepository;

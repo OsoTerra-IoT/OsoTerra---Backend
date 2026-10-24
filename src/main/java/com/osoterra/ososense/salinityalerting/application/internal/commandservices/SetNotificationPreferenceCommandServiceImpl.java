@@ -7,8 +7,10 @@ import com.osoterra.ososense.salinityalerting.domain.repositories.NotificationPr
 import com.osoterra.ososense.salinityalerting.domain.services.SetNotificationPreferenceCommand;
 import com.osoterra.ososense.salinityalerting.domain.services.SetNotificationPreferenceCommandService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class SetNotificationPreferenceCommandServiceImpl implements SetNotificationPreferenceCommandService {
 
     private final NotificationPreferenceRepository notificationPreferenceRepository;

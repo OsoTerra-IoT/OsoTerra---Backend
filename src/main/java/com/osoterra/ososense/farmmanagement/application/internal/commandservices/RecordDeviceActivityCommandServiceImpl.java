@@ -7,8 +7,10 @@ import com.osoterra.ososense.farmmanagement.domain.services.RecordDeviceActivity
 import com.osoterra.ososense.farmmanagement.domain.services.RecordDeviceActivityCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class RecordDeviceActivityCommandServiceImpl implements RecordDeviceActivityCommandService {
 
     private final DeviceRepository deviceRepository;

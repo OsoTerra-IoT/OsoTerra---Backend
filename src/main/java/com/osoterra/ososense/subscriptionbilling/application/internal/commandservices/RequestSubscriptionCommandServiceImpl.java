@@ -9,8 +9,10 @@ import com.osoterra.ososense.subscriptionbilling.domain.services.RequestSubscrip
 import com.osoterra.ososense.subscriptionbilling.domain.services.RequestSubscriptionCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class RequestSubscriptionCommandServiceImpl implements RequestSubscriptionCommandService {
 
     private final SubscriptionPlanRepository subscriptionPlanRepository;

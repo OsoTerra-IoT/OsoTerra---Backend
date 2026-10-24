@@ -7,11 +7,14 @@ import com.osoterra.ososense.iam.domain.model.LinkStatus;
 import com.osoterra.ososense.iam.domain.model.UserAccountId;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 class JpaAdvisoryLinkRepository implements AdvisoryLinkRepository {
+
+    private static final List<LinkStatus> OPEN_STATUSES = List.of(LinkStatus.PENDING, LinkStatus.ACCEPTED);
 
     private final SpringDataAdvisoryLinkJpaRepository springDataRepository;
 
@@ -41,6 +44,17 @@ class JpaAdvisoryLinkRepository implements AdvisoryLinkRepository {
     public List<AdvisoryLink> findActiveByAdvisorId(UserAccountId advisorId) {
         return springDataRepository.findByAdvisorIdAndStatus(advisorId.value(), LinkStatus.ACCEPTED).stream()
                 .map(AdvisoryLinkMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<AdvisoryLink> findOpenByParticipant(UserAccountId userId) {
+        // Spring Data binds the status filter to the farmer branch only, so filter both branches here.
+        return springDataRepository
+                .findByAdvisorIdOrFarmerIdAndStatusIn(userId.value(), userId.value(), OPEN_STATUSES).stream()
+                .map(AdvisoryLinkMapper::toDomain)
+                .filter(link -> OPEN_STATUSES.contains(link.getStatus()))
+                .sorted(Comparator.comparing(AdvisoryLink::getRequestedAt).reversed())
                 .toList();
     }
 }
