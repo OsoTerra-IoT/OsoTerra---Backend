@@ -1,5 +1,6 @@
 package com.osoterra.ososense.iam.domain.services;
 
+import com.osoterra.ososense.iam.domain.model.AdvisoryLink;
 import com.osoterra.ososense.iam.domain.model.UserAccount;
 import com.osoterra.ososense.iam.domain.model.UserAccountId;
 
@@ -19,4 +20,9 @@ public interface UserAccountQueryService {
      * Farmers with an accepted, currently active link to the given advisor.
      */
     List<UserAccount> findFarmersLinkedToAdvisor(UserAccountId advisorId);
+
+    /**
+     * Pending and accepted advisory links where the user is the advisor or the farmer, newest first.
+     */
+    List<AdvisoryLink> findOpenAdvisoryLinks(UserAccountId userId);
 }

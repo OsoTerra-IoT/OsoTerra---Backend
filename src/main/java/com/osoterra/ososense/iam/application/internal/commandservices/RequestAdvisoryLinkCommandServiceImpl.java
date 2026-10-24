@@ -1,6 +1,7 @@
 package com.osoterra.ososense.iam.application.internal.commandservices;
 
 import com.osoterra.ososense.iam.domain.model.AdvisoryLink;
+import com.osoterra.ososense.iam.domain.model.EmailAddress;
 import com.osoterra.ososense.iam.domain.model.UserAccount;
 import com.osoterra.ososense.iam.domain.model.UserAccountId;
 import com.osoterra.ososense.iam.domain.repositories.AdvisoryLinkRepository;
@@ -28,14 +29,12 @@ class RequestAdvisoryLinkCommandServiceImpl implements RequestAdvisoryLinkComman
     @Override
     public AdvisoryLink handle(RequestAdvisoryLinkCommand command) {
         UserAccountId advisorId = new UserAccountId(command.advisorId());
-        UserAccountId farmerId = new UserAccountId(command.farmerId());
 
         UserAccount advisor = userAccountRepository
                 .findById(advisorId)
                 .orElseThrow(() -> new EntityNotFoundException("Account not found for id " + advisorId));
-        UserAccount farmer = userAccountRepository
-                .findById(farmerId)
-                .orElseThrow(() -> new EntityNotFoundException("Account not found for id " + farmerId));
+        UserAccount farmer = findFarmer(command);
+        UserAccountId farmerId = farmer.getId();
 
         if (!advisor.isAdvisor()) {
             throw new BusinessRuleViolationException("Only an advisor account can request a supervision link");
@@ -44,6 +43,23 @@ class RequestAdvisoryLinkCommandServiceImpl implements RequestAdvisoryLinkComman
             throw new BusinessRuleViolationException("A supervision link must target a farmer account");
         }
 
+        boolean alreadyLinked = advisoryLinkRepository.findOpenByParticipant(advisorId).stream()
+                .anyMatch(link -> link.getFarmerId().equals(farmerId));
+        if (alreadyLinked) {
+            throw new BusinessRuleViolationException("A pending or accepted link with this farmer already exists");
+        }
         return advisoryLinkRepository.save(AdvisoryLink.request(advisorId, farmerId));
+    }
+
+    private UserAccount findFarmer(RequestAdvisoryLinkCommand command) {
+        if (command.farmerId() != null) {
+            return userAccountRepository
+                    .findById(new UserAccountId(command.farmerId()))
+                    .orElseThrow(() -> new EntityNotFoundException("Account not found for id " + command.farmerId()));
+        }
+        EmailAddress email = new EmailAddress(command.farmerEmail().trim());
+        return userAccountRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("No account with email " + email.value()));
     }
 }
