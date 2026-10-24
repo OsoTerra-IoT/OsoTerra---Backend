@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 /**
- * An advisor reaches a farmer's farms only through an accepted advisory link, and sees the
- * corrective action that resolved an alert.
+ * An advisor reaches a farmer's farms only through an accepted advisory link, requested by the
+ * farmer's email; nobody else reads or changes a farmer's plots.
  */
 @AutoConfigureMockMvc
 class AdvisorFlowIntegrationTest extends IntegrationTest {
@@ -56,10 +56,89 @@ class AdvisorFlowIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    void advisorInvitesAFarmerByEmailAndTheFarmerAcceptsFromTheirPendingLinks() throws Exception {
+        String farmer = signUpAndSignIn("rosa.invited@example.com", "FARMER", null);
+        String advisor = signUpAndSignIn("luis.advisor@example.com", "ADVISOR", "CIP-654321");
+        Integer plotId = createPlot(farmer, "Huerta Norte");
+
+        mvc.perform(auth(json(post("/api/v1/advisory-links"), """
+                {"farmerEmail":"Rosa.Invited@Example.com"}"""), advisor))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("PENDING"))
+                .andExpect(jsonPath("$.farmerEmail").value("rosa.invited@example.com"));
+        mvc.perform(auth(json(post("/api/v1/advisory-links"), """
+                {"farmerEmail":"rosa.invited@example.com"}"""), advisor))
+                .andExpect(status().isConflict());
+        mvc.perform(auth(json(post("/api/v1/advisory-links"), """
+                {"farmerEmail":"nobody@example.com"}"""), advisor))
+                .andExpect(status().isNotFound());
+        mvc.perform(auth(get("/api/v1/plots/" + plotId), advisor)).andExpect(status().isForbidden());
+
+        String pending = body(mvc.perform(auth(get("/api/v1/advisory-links/mine"), farmer))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].status").value("PENDING"))
+                .andExpect(jsonPath("$[0].advisorEmail").value("luis.advisor@example.com"))
+                .andExpect(jsonPath("$[0].advisorName").value("Ana Soto")));
+        Integer linkId = JsonPath.read(pending, "$[0].id");
+        mvc.perform(auth(post("/api/v1/advisory-links/" + linkId + "/acceptance"), advisor))
+                .andExpect(status().isForbidden());
+        mvc.perform(auth(post("/api/v1/advisory-links/" + linkId + "/acceptance"), farmer))
+                .andExpect(status().isOk());
+
+        mvc.perform(auth(get("/api/v1/plots/" + plotId), advisor)).andExpect(status().isOk());
+        mvc.perform(auth(get("/api/v1/soil-readings").param("plotId", plotId.toString()), advisor))
+                .andExpect(status().isOk());
+        mvc.perform(auth(post("/api/v1/plots/" + plotId + "/deactivation"), advisor))
+                .andExpect(status().isForbidden());
+
+        mvc.perform(auth(post("/api/v1/advisory-links/" + linkId + "/revocation"), farmer))
+                .andExpect(status().isOk());
+        mvc.perform(auth(get("/api/v1/plots/" + plotId), advisor)).andExpect(status().isForbidden());
+        mvc.perform(auth(get("/api/v1/advisory-links/mine"), advisor))
+                .andExpect(status().isOk()).andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void anotherFarmerCannotReadOrChangeAPlotThatIsNotTheirs() throws Exception {
+        String owner = signUpAndSignIn("marta.owner@example.com", "FARMER", null);
+        String stranger = signUpAndSignIn("pedro.stranger@example.com", "FARMER", null);
+        Integer plotId = createPlot(owner, "Parcela Sur");
+        String plot = body(mvc.perform(auth(get("/api/v1/plots/" + plotId), owner)).andExpect(status().isOk()));
+        Integer farmId = JsonPath.read(plot, "$.farmId");
+
+        mvc.perform(auth(get("/api/v1/plots/" + plotId), stranger)).andExpect(status().isForbidden());
+        mvc.perform(auth(get("/api/v1/plots").param("farmId", farmId.toString()), stranger))
+                .andExpect(status().isForbidden());
+        mvc.perform(auth(get("/api/v1/soil-readings").param("plotId", plotId.toString()), stranger))
+                .andExpect(status().isForbidden());
+        mvc.perform(auth(get("/api/v1/salinity-alerts").param("plotId", plotId.toString()), stranger))
+                .andExpect(status().isForbidden());
+        mvc.perform(auth(get("/api/v1/devices").param("plotId", plotId.toString()), stranger))
+                .andExpect(status().isForbidden());
+        mvc.perform(auth(get("/api/v1/dashboard/plots/" + plotId), stranger)).andExpect(status().isForbidden());
+        mvc.perform(auth(post("/api/v1/plots/" + plotId + "/deactivation"), stranger))
+                .andExpect(status().isForbidden());
+        mvc.perform(auth(json(post("/api/v1/plots"), """
+                {"farmId":%d,"name":"Ajena","areaHectares":1.0,"latitude":-5.19,"longitude":-80.63}"""
+                .formatted(farmId)), stranger)).andExpect(status().isForbidden());
+    }
+
+    @Test
     void cropCatalogIncludesNorthCoastExportCrops() throws Exception {
         mvc.perform(get("/api/v1/crops")).andExpect(status().isOk())
                 .andExpect(jsonPath("$[?(@.commonName == 'Palta')].salinityThresholdDsM").value(1.1))
                 .andExpect(jsonPath("$[?(@.commonName == 'Arándano')]").isNotEmpty());
+    }
+
+    private Integer createPlot(String farmerToken, String name) throws Exception {
+        String farm = body(mvc.perform(auth(json(post("/api/v1/farms"), """
+                {"name":"Fundo %s","department":"Piura","province":"Piura","district":"Castilla"}"""
+                .formatted(name)), farmerToken)).andExpect(status().isCreated()));
+        Integer farmId = JsonPath.read(farm, "$.id");
+        String plot = body(mvc.perform(auth(json(post("/api/v1/plots"), """
+                {"farmId":%d,"name":"%s","areaHectares":2.5,"latitude":-5.19,"longitude":-80.63}"""
+                .formatted(farmId, name)), farmerToken)).andExpect(status().isCreated()));
+        return JsonPath.read(plot, "$.id");
     }
 
     private String signUpAndSignIn(String email, String role, String license) throws Exception {
