@@ -7,6 +7,8 @@ import com.osoterra.ososense.iam.domain.repositories.PasswordResetTokenStore;
 import com.osoterra.ososense.iam.domain.repositories.UserAccountRepository;
 import com.osoterra.ososense.iam.domain.services.RequestPasswordResetCommand;
 import com.osoterra.ososense.iam.domain.services.RequestPasswordResetCommandService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ import java.time.Duration;
 @Transactional
 class RequestPasswordResetCommandServiceImpl implements RequestPasswordResetCommandService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestPasswordResetCommandServiceImpl.class);
     private static final Duration TOKEN_VALIDITY = Duration.ofHours(1);
 
     private final UserAccountRepository userAccountRepository;
@@ -38,7 +41,13 @@ class RequestPasswordResetCommandServiceImpl implements RequestPasswordResetComm
                 .filter(UserAccount::isActive)
                 .ifPresent(account -> {
                     String token = passwordResetTokenStore.issueTokenFor(account.getId(), TOKEN_VALIDITY);
-                    passwordResetNotifier.notifyResetRequested(account.getEmail().value(), token);
+                    try {
+                        passwordResetNotifier.notifyResetRequested(account.getEmail().value(), token);
+                    } catch (RuntimeException ex) {
+                        // Answer the same as for an unknown email: a mail failure must not reveal the account.
+                        LOGGER.warn("Could not send the password reset email to account {}: {}",
+                                account.getId(), ex.getMessage());
+                    }
                 });
     }
 }
