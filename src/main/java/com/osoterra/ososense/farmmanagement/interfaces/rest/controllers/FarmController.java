@@ -13,6 +13,7 @@ import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.FarmResour
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterFarmResource;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
+import com.osoterra.ososense.shared.domain.services.PlotAccessPolicy;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,18 +38,21 @@ class FarmController {
     private final FarmResourceAssembler farmResourceAssembler;
     private final AdvisoryAccessLookup advisoryAccessLookup;
     private final UpdateFarmCommandService updateFarmCommandService;
+    private final PlotAccessPolicy plotAccessPolicy;
 
     FarmController(
             RegisterFarmCommandService registerFarmCommandService,
             UpdateFarmCommandService updateFarmCommandService,
             FarmManagementQueryService farmManagementQueryService,
             FarmResourceAssembler farmResourceAssembler,
-            AdvisoryAccessLookup advisoryAccessLookup) {
+            AdvisoryAccessLookup advisoryAccessLookup,
+            PlotAccessPolicy plotAccessPolicy) {
         this.registerFarmCommandService = registerFarmCommandService;
         this.updateFarmCommandService = updateFarmCommandService;
         this.farmManagementQueryService = farmManagementQueryService;
         this.farmResourceAssembler = farmResourceAssembler;
         this.advisoryAccessLookup = advisoryAccessLookup;
+        this.plotAccessPolicy = plotAccessPolicy;
     }
 
     @PostMapping
@@ -88,7 +92,8 @@ class FarmController {
     }
 
     @GetMapping("/{id}")
-    FarmResource getById(@PathVariable Long id) {
+    FarmResource getById(@PathVariable Long id, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkFarmRead(userId, id);
         return farmManagementQueryService
                 .findFarmById(new FarmId(id))
                 .map(farmResourceAssembler::toResource)

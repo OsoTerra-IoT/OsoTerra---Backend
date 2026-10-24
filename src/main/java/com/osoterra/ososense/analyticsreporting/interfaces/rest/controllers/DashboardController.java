@@ -6,6 +6,8 @@ import com.osoterra.ososense.analyticsreporting.domain.gateways.PlotSummary;
 import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.AlertSummaryResource;
 import com.osoterra.ososense.analyticsreporting.interfaces.rest.resources.PlotDashboardResource;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.services.PlotAccessPolicy;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,14 +26,17 @@ class DashboardController {
 
     private final PlotStructureLookup plotStructureLookup;
     private final AlertHistoryLookup alertHistoryLookup;
+    private final PlotAccessPolicy plotAccessPolicy;
 
-    DashboardController(PlotStructureLookup plotStructureLookup, AlertHistoryLookup alertHistoryLookup) {
+    DashboardController(PlotStructureLookup plotStructureLookup, AlertHistoryLookup alertHistoryLookup, PlotAccessPolicy plotAccessPolicy) {
         this.plotStructureLookup = plotStructureLookup;
         this.alertHistoryLookup = alertHistoryLookup;
+        this.plotAccessPolicy = plotAccessPolicy;
     }
 
     @GetMapping("/plots/{plotId}")
-    PlotDashboardResource plotDashboard(@PathVariable Long plotId) {
+    PlotDashboardResource plotDashboard(@PathVariable Long plotId, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotRead(userId, plotId);
         PlotSummary summary = plotStructureLookup
                 .findPlotSummary(plotId)
                 .orElseThrow(() -> new EntityNotFoundException("Plot not found for id " + plotId));

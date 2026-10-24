@@ -19,6 +19,7 @@ import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterPl
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.UpdatePlotResource;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
+import com.osoterra.ososense.shared.domain.services.PlotAccessPolicy;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,7 @@ class PlotController {
     private final DeactivatePlotCommandService deactivatePlotCommandService;
     private final FarmManagementQueryService farmManagementQueryService;
     private final PlotResourceAssembler plotResourceAssembler;
+    private final PlotAccessPolicy plotAccessPolicy;
 
     PlotController(
             RegisterPlotCommandService registerPlotCommandService,
@@ -50,17 +52,21 @@ class PlotController {
             AssignCropToPlotCommandService assignCropToPlotCommandService,
             DeactivatePlotCommandService deactivatePlotCommandService,
             FarmManagementQueryService farmManagementQueryService,
-            PlotResourceAssembler plotResourceAssembler) {
+            PlotResourceAssembler plotResourceAssembler,
+            PlotAccessPolicy plotAccessPolicy) {
         this.registerPlotCommandService = registerPlotCommandService;
         this.updatePlotCommandService = updatePlotCommandService;
         this.assignCropToPlotCommandService = assignCropToPlotCommandService;
         this.deactivatePlotCommandService = deactivatePlotCommandService;
         this.farmManagementQueryService = farmManagementQueryService;
         this.plotResourceAssembler = plotResourceAssembler;
+        this.plotAccessPolicy = plotAccessPolicy;
     }
 
     @PostMapping
-    ResponseEntity<PlotResource> register(@Valid @RequestBody RegisterPlotResource request) {
+    ResponseEntity<PlotResource> register(
+            @Valid @RequestBody RegisterPlotResource request, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkFarmWrite(userId, request.farmId());
         Plot plot = registerPlotCommandService.handle(new RegisterPlotCommand(
                 request.farmId(), request.name(), request.areaHectares(), request.latitude(), request.longitude()));
         return ResponseEntity.status(HttpStatus.CREATED).body(plotResourceAssembler.toResource(plot));
@@ -76,19 +82,23 @@ class PlotController {
 
     @PostMapping("/{id}/crop")
     ResponseEntity<PlotResource> assignCrop(
-            @PathVariable Long id, @Valid @RequestBody AssignCropToPlotResource request) {
+            @PathVariable Long id, @Valid @RequestBody AssignCropToPlotResource request,
+            @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotWrite(userId, id);
         Plot plot = assignCropToPlotCommandService.handle(new AssignCropToPlotCommand(id, request.cropId()));
         return ResponseEntity.ok(plotResourceAssembler.toResource(plot));
     }
 
     @PostMapping("/{id}/deactivation")
-    ResponseEntity<PlotResource> deactivate(@PathVariable Long id) {
+    ResponseEntity<PlotResource> deactivate(@PathVariable Long id, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotWrite(userId, id);
         Plot plot = deactivatePlotCommandService.handle(new DeactivatePlotCommand(id));
         return ResponseEntity.ok(plotResourceAssembler.toResource(plot));
     }
 
     @GetMapping("/{id}")
-    PlotResource getById(@PathVariable Long id) {
+    PlotResource getById(@PathVariable Long id, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotRead(userId, id);
         return farmManagementQueryService
                 .findPlotById(new PlotId(id))
                 .map(plotResourceAssembler::toResource)
@@ -96,7 +106,8 @@ class PlotController {
     }
 
     @GetMapping
-    List<PlotResource> byFarm(@RequestParam Long farmId) {
+    List<PlotResource> byFarm(@RequestParam Long farmId, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkFarmRead(userId, farmId);
         return farmManagementQueryService.findPlotsByFarmId(new FarmId(farmId)).stream()
                 .map(plotResourceAssembler::toResource)
                 .toList();

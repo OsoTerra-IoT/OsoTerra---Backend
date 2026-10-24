@@ -13,6 +13,8 @@ import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.DeviceReso
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.DeviceResourceAssembler;
 import com.osoterra.ososense.farmmanagement.interfaces.rest.resources.RegisterDeviceResource;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.services.PlotAccessPolicy;
+import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -33,16 +35,19 @@ class DeviceController {
     private final AttachDeviceToPlotCommandService attachDeviceToPlotCommandService;
     private final FarmManagementQueryService farmManagementQueryService;
     private final DeviceResourceAssembler deviceResourceAssembler;
+    private final PlotAccessPolicy plotAccessPolicy;
 
     DeviceController(
             RegisterDeviceCommandService registerDeviceCommandService,
             AttachDeviceToPlotCommandService attachDeviceToPlotCommandService,
             FarmManagementQueryService farmManagementQueryService,
-            DeviceResourceAssembler deviceResourceAssembler) {
+            DeviceResourceAssembler deviceResourceAssembler,
+            PlotAccessPolicy plotAccessPolicy) {
         this.registerDeviceCommandService = registerDeviceCommandService;
         this.attachDeviceToPlotCommandService = attachDeviceToPlotCommandService;
         this.farmManagementQueryService = farmManagementQueryService;
         this.deviceResourceAssembler = deviceResourceAssembler;
+        this.plotAccessPolicy = plotAccessPolicy;
     }
 
     @PostMapping
@@ -53,7 +58,9 @@ class DeviceController {
 
     @PostMapping("/{id}/attachment")
     ResponseEntity<DeviceResource> attachToPlot(
-            @PathVariable Long id, @Valid @RequestBody AttachDeviceToPlotResource request) {
+            @PathVariable Long id, @Valid @RequestBody AttachDeviceToPlotResource request,
+            @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotWrite(userId, request.plotId());
         Device device = attachDeviceToPlotCommandService.handle(new AttachDeviceToPlotCommand(id, request.plotId()));
         return ResponseEntity.ok(deviceResourceAssembler.toResource(device));
     }
@@ -63,7 +70,8 @@ class DeviceController {
      * a plot holds at most one device.
      */
     @GetMapping
-    List<DeviceResource> byPlot(@RequestParam Long plotId) {
+    List<DeviceResource> byPlot(@RequestParam Long plotId, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotRead(userId, plotId);
         return farmManagementQueryService
                 .findDeviceByPlotId(new PlotId(plotId))
                 .map(deviceResourceAssembler::toResource)
@@ -72,7 +80,8 @@ class DeviceController {
     }
 
     @GetMapping("/{id}")
-    DeviceResource getById(@PathVariable Long id) {
+    DeviceResource getById(@PathVariable Long id, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkDeviceRead(userId, id);
         return farmManagementQueryService
                 .findDeviceById(new DeviceId(id))
                 .map(deviceResourceAssembler::toResource)

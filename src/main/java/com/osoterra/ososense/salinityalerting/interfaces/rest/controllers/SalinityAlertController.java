@@ -15,6 +15,7 @@ import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.Salinity
 import com.osoterra.ososense.salinityalerting.interfaces.rest.resources.SalinityAlertResourceAssembler;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
+import com.osoterra.ososense.shared.domain.services.PlotAccessPolicy;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,37 +38,39 @@ class SalinityAlertController {
     private final SalinityAlertingQueryService salinityAlertingQueryService;
     private final SalinityAlertResourceAssembler salinityAlertResourceAssembler;
     private final CorrectiveActionResourceAssembler correctiveActionResourceAssembler;
+    private final PlotAccessPolicy plotAccessPolicy;
 
     SalinityAlertController(
             AcknowledgeAlertCommandService acknowledgeAlertCommandService,
             RegisterCorrectiveActionCommandService registerCorrectiveActionCommandService,
             SalinityAlertingQueryService salinityAlertingQueryService,
             SalinityAlertResourceAssembler salinityAlertResourceAssembler,
-            CorrectiveActionResourceAssembler correctiveActionResourceAssembler) {
+            CorrectiveActionResourceAssembler correctiveActionResourceAssembler,
+            PlotAccessPolicy plotAccessPolicy) {
         this.acknowledgeAlertCommandService = acknowledgeAlertCommandService;
         this.registerCorrectiveActionCommandService = registerCorrectiveActionCommandService;
         this.salinityAlertingQueryService = salinityAlertingQueryService;
         this.salinityAlertResourceAssembler = salinityAlertResourceAssembler;
         this.correctiveActionResourceAssembler = correctiveActionResourceAssembler;
+        this.plotAccessPolicy = plotAccessPolicy;
     }
 
     @GetMapping
-    List<SalinityAlertResource> byPlot(@RequestParam Long plotId) {
+    List<SalinityAlertResource> byPlot(@RequestParam Long plotId, @CurrentUserId Long userId) {
+        plotAccessPolicy.checkPlotRead(userId, plotId);
         return salinityAlertingQueryService.findAlertsByPlotId(plotId).stream()
                 .map(salinityAlertResourceAssembler::toResource)
                 .toList();
     }
 
     @GetMapping("/{id}")
-    SalinityAlertResource getById(@PathVariable Long id) {
-        return salinityAlertingQueryService
-                .findAlertById(new SalinityAlertId(id))
-                .map(salinityAlertResourceAssembler::toResource)
-                .orElseThrow(() -> new EntityNotFoundException("Salinity alert not found for id " + id));
+    SalinityAlertResource getById(@PathVariable Long id, @CurrentUserId Long userId) {
+        return salinityAlertResourceAssembler.toResource(readableAlert(id, userId));
     }
 
     @PostMapping("/{id}/acknowledgement")
     ResponseEntity<SalinityAlertResource> acknowledge(@PathVariable Long id, @CurrentUserId Long userId) {
+        readableAlert(id, userId);
         SalinityAlert alert = acknowledgeAlertCommandService.handle(new AcknowledgeAlertCommand(id, userId));
         return ResponseEntity.ok(salinityAlertResourceAssembler.toResource(alert));
     }
@@ -76,6 +79,7 @@ class SalinityAlertController {
     ResponseEntity<CorrectiveActionResource> registerCorrectiveAction(
             @PathVariable Long id, @Valid @RequestBody RegisterCorrectiveActionResource request,
             @CurrentUserId Long userId) {
+        readableAlert(id, userId);
         CorrectiveAction action = registerCorrectiveActionCommandService.handle(new RegisterCorrectiveActionCommand(
                 id, request.actionType(), request.executedAt(), request.notes(), userId));
         return ResponseEntity.status(HttpStatus.CREATED).body(correctiveActionResourceAssembler.toResource(action));
@@ -86,10 +90,20 @@ class SalinityAlertController {
      * registering one resolves the alert.
      */
     @GetMapping("/{id}/corrective-actions")
-    List<CorrectiveActionResource> correctiveActions(@PathVariable Long id) {
+    List<CorrectiveActionResource> correctiveActions(@PathVariable Long id, @CurrentUserId Long userId) {
+        readableAlert(id, userId);
         return salinityAlertingQueryService.findCorrectiveActionByAlertId(id)
                 .map(correctiveActionResourceAssembler::toResource)
                 .stream()
                 .toList();
+    }
+
+    /** The alert, if the user may see its plot: its farmer or an advisor linked to them. */
+    private SalinityAlert readableAlert(Long id, Long userId) {
+        SalinityAlert alert = salinityAlertingQueryService
+                .findAlertById(new SalinityAlertId(id))
+                .orElseThrow(() -> new EntityNotFoundException("Salinity alert not found for id " + id));
+        plotAccessPolicy.checkPlotRead(userId, alert.getPlotId());
+        return alert;
     }
 }

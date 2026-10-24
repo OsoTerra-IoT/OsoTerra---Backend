@@ -11,6 +11,7 @@ import com.osoterra.ososense.subscriptionbilling.interfaces.rest.resources.Reque
 import com.osoterra.ososense.subscriptionbilling.interfaces.rest.resources.SubscriptionResource;
 import com.osoterra.ososense.subscriptionbilling.interfaces.rest.resources.SubscriptionResourceAssembler;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
+import com.osoterra.ososense.shared.domain.exceptions.ForbiddenOperationException;
 import com.osoterra.ososense.shared.interfaces.rest.CurrentUserId;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -53,7 +54,8 @@ class SubscriptionController {
     }
 
     @PostMapping("/{id}/cancellation")
-    ResponseEntity<SubscriptionResource> cancel(@PathVariable Long id) {
+    ResponseEntity<SubscriptionResource> cancel(@PathVariable Long id, @CurrentUserId Long userAccountId) {
+        ownSubscription(id, userAccountId);
         Subscription subscription = cancelSubscriptionCommandService.handle(new CancelSubscriptionCommand(id));
         return ResponseEntity.ok(subscriptionResourceAssembler.toResource(subscription));
     }
@@ -66,10 +68,17 @@ class SubscriptionController {
     }
 
     @GetMapping("/{id}")
-    SubscriptionResource getById(@PathVariable Long id) {
-        return subscriptionBillingQueryService
+    SubscriptionResource getById(@PathVariable Long id, @CurrentUserId Long userAccountId) {
+        return subscriptionResourceAssembler.toResource(ownSubscription(id, userAccountId));
+    }
+
+    private Subscription ownSubscription(Long id, Long userAccountId) {
+        Subscription subscription = subscriptionBillingQueryService
                 .findSubscriptionById(new SubscriptionId(id))
-                .map(subscriptionResourceAssembler::toResource)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id " + id));
+        if (!subscription.getUserAccountId().equals(userAccountId)) {
+            throw new ForbiddenOperationException("Subscription " + id + " belongs to another account");
+        }
+        return subscription;
     }
 }
