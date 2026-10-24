@@ -8,10 +8,12 @@ import com.osoterra.ososense.iam.domain.repositories.UserAccountRepository;
 import com.osoterra.ososense.iam.domain.services.RequestPasswordResetCommand;
 import com.osoterra.ososense.iam.domain.services.RequestPasswordResetCommandService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
 @Service
+@Transactional
 class RequestPasswordResetCommandServiceImpl implements RequestPasswordResetCommandService {
 
     private static final Duration TOKEN_VALIDITY = Duration.ofHours(1);

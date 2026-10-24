@@ -11,8 +11,10 @@ import com.osoterra.ososense.iam.domain.services.AuthenticateUserCommandService;
 import com.osoterra.ososense.iam.domain.services.AuthenticationResult;
 import com.osoterra.ososense.iam.domain.services.PasswordHashingService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class AuthenticateUserCommandServiceImpl implements AuthenticateUserCommandService {
 
     private final UserAccountRepository userAccountRepository;

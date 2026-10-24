@@ -7,8 +7,10 @@ import com.osoterra.ososense.farmmanagement.domain.services.DeactivatePlotComman
 import com.osoterra.ososense.farmmanagement.domain.services.DeactivatePlotCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class DeactivatePlotCommandServiceImpl implements DeactivatePlotCommandService {
 
     private final PlotRepository plotRepository;

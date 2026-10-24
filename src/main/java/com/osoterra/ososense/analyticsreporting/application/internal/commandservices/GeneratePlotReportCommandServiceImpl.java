@@ -14,6 +14,7 @@ import com.osoterra.ososense.analyticsreporting.domain.services.GeneratePlotRepo
 import com.osoterra.ososense.analyticsreporting.domain.services.GeneratePlotReportCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  * context's anti-corruption layer clients into the other bounded contexts it reports on.
  */
 @Service
+@Transactional
 class GeneratePlotReportCommandServiceImpl implements GeneratePlotReportCommandService {
 
     private final PlotReportRepository plotReportRepository;

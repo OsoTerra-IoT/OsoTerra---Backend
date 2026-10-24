@@ -5,8 +5,10 @@ import com.osoterra.ososense.farmmanagement.domain.repositories.FarmRepository;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterFarmCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterFarmCommandService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class RegisterFarmCommandServiceImpl implements RegisterFarmCommandService {
 
     private final FarmRepository farmRepository;

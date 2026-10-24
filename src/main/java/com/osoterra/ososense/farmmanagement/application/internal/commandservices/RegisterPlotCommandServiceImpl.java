@@ -10,6 +10,7 @@ import com.osoterra.ososense.farmmanagement.domain.services.RegisterPlotCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.RegisterPlotCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Registers a new plot under an existing farm. Cross-checking the owner's plot quota
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
  * context exists.
  */
 @Service
+@Transactional
 class RegisterPlotCommandServiceImpl implements RegisterPlotCommandService {
 
     private final FarmRepository farmRepository;

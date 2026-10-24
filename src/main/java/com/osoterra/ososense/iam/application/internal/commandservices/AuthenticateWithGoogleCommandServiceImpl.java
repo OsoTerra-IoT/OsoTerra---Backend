@@ -14,8 +14,10 @@ import com.osoterra.ososense.iam.domain.services.AuthenticateWithGoogleCommand;
 import com.osoterra.ososense.iam.domain.services.AuthenticateWithGoogleCommandService;
 import com.osoterra.ososense.iam.domain.services.AuthenticationResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class AuthenticateWithGoogleCommandServiceImpl implements AuthenticateWithGoogleCommandService {
 
     private final GoogleTokenVerifier googleTokenVerifier;

@@ -10,8 +10,10 @@ import com.osoterra.ososense.farmmanagement.domain.services.AssignCropToPlotComm
 import com.osoterra.ososense.farmmanagement.domain.services.AssignCropToPlotCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class AssignCropToPlotCommandServiceImpl implements AssignCropToPlotCommandService {
 
     private final PlotRepository plotRepository;

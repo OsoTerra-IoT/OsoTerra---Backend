@@ -11,8 +11,10 @@ import com.osoterra.ososense.subscriptionbilling.domain.services.RecordPaymentCo
 import com.osoterra.ososense.subscriptionbilling.domain.services.RecordPaymentCommandService;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class RecordPaymentCommandServiceImpl implements RecordPaymentCommandService {
 
     private final SubscriptionRepository subscriptionRepository;

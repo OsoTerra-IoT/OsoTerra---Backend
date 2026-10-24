@@ -10,8 +10,10 @@ import com.osoterra.ososense.iam.domain.services.RequestAdvisoryLinkCommandServi
 import com.osoterra.ososense.shared.domain.exceptions.BusinessRuleViolationException;
 import com.osoterra.ososense.shared.domain.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 class RequestAdvisoryLinkCommandServiceImpl implements RequestAdvisoryLinkCommandService {
 
     private final AdvisoryLinkRepository advisoryLinkRepository;
