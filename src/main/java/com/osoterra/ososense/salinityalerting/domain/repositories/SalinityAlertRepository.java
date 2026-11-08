@@ -1,7 +1,5 @@
 package com.osoterra.ososense.salinityalerting.domain.repositories;
 
-import com.osoterra.ososense.salinityalerting.domain.model.AlertSeverity;
-import com.osoterra.ososense.salinityalerting.domain.model.AlertStatus;
 import com.osoterra.ososense.salinityalerting.domain.model.SalinityAlert;
 import com.osoterra.ososense.salinityalerting.domain.model.SalinityAlertId;
 
@@ -16,5 +14,5 @@ public interface SalinityAlertRepository {
 
     List<SalinityAlert> findByPlotId(Long plotId);
 
-    boolean existsByPlotIdAndSeverityAndStatus(Long plotId, AlertSeverity severity, AlertStatus status);
+    Optional<SalinityAlert> findLatestByPlotId(Long plotId);
 }

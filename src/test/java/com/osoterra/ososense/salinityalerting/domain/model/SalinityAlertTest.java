@@ -53,4 +53,31 @@ class SalinityAlertTest {
 
         assertThatThrownBy(alert::resolve).isInstanceOf(BusinessRuleViolationException.class);
     }
+
+    @Test
+    void anOpenAlertCoversAnEqualOrMilderSeverityButNotAHigherOne() {
+        SalinityAlert warning = SalinityAlert.generate(1L, 2L, new BigDecimal("3.9"), new BigDecimal("3.0"));
+
+        assertThat(warning.stillCovers(AlertSeverity.WATCH)).isTrue();
+        assertThat(warning.stillCovers(AlertSeverity.WARNING)).isTrue();
+        assertThat(warning.stillCovers(AlertSeverity.CRITICAL)).isFalse();
+    }
+
+    @Test
+    void anAcknowledgedAlertKeepsCoveringEqualOrMilderSeverities() {
+        SalinityAlert critical = SalinityAlert.generate(1L, 2L, new BigDecimal("6.0"), new BigDecimal("3.0"));
+        critical.acknowledge(9L);
+
+        assertThat(critical.stillCovers(AlertSeverity.CRITICAL)).isTrue();
+        assertThat(critical.stillCovers(AlertSeverity.WATCH)).isTrue();
+    }
+
+    @Test
+    void aResolvedAlertCoversNothing() {
+        SalinityAlert critical = SalinityAlert.generate(1L, 2L, new BigDecimal("6.0"), new BigDecimal("3.0"));
+        critical.resolve();
+
+        assertThat(critical.stillCovers(AlertSeverity.WATCH)).isFalse();
+        assertThat(critical.stillCovers(AlertSeverity.CRITICAL)).isFalse();
+    }
 }

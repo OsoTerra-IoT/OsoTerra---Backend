@@ -102,6 +102,17 @@ public final class SalinityAlert extends AggregateRoot<SalinityAlertId> {
         this.status = AlertStatus.RESOLVED;
     }
 
+    /**
+     * Whether this alert, being the latest of its plot, already covers a new excess of the
+     * given severity: it is still unresolved (open or acknowledged) and the new severity is
+     * not higher. Acknowledging an alert therefore does not let an equal or milder one
+     * through; a higher severity, or a resolved alert, does.
+     */
+    public boolean stillCovers(AlertSeverity newSeverity) {
+        Objects.requireNonNull(newSeverity, "newSeverity");
+        return status != AlertStatus.RESOLVED && newSeverity.compareTo(severity) <= 0;
+    }
+
     public Long getPlotId() {
         return plotId;
     }

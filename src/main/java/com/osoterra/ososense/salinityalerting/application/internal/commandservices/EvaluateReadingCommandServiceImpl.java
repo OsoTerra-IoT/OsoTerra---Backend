@@ -3,7 +3,6 @@ package com.osoterra.ososense.salinityalerting.application.internal.commandservi
 import com.osoterra.ososense.salinityalerting.domain.gateways.CropThresholdLookup;
 import com.osoterra.ososense.salinityalerting.domain.gateways.NotificationDispatcher;
 import com.osoterra.ososense.salinityalerting.domain.gateways.PlotOwnerLookup;
-import com.osoterra.ososense.salinityalerting.domain.model.AlertStatus;
 import com.osoterra.ososense.salinityalerting.domain.model.NotificationChannel;
 import com.osoterra.ososense.salinityalerting.domain.model.NotificationPreference;
 import com.osoterra.ososense.salinityalerting.domain.model.SalinityAlert;
@@ -21,9 +20,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Evaluates one soil reading and, if it exceeds the plot's crop threshold and no
- * duplicate active alert already exists, generates a {@code SalinityAlert} and
- * dispatches a notification per the plot owner's preferences.
+ * Evaluates one soil reading and, if it exceeds the plot's crop threshold and the plot's
+ * latest alert does not already cover it, generates a {@code SalinityAlert} and dispatches
+ * a notification per the plot owner's preferences. The latest alert covers the reading while
+ * it is open or acknowledged (not yet resolved) and the new severity is equal or lower; a
+ * higher severity, or a resolved latest alert, raises a new one.
  */
 @Service
 @Transactional
@@ -57,15 +58,17 @@ class EvaluateReadingCommandServiceImpl implements EvaluateReadingCommandService
             return;
         }
 
-        SalinityAlert alert = SalinityAlert.generate(
+        SalinityAlert candidate = SalinityAlert.generate(
                 command.plotId(), command.soilReadingId(), command.observedConductivityDsM(), threshold.get());
 
-        if (salinityAlertRepository.existsByPlotIdAndSeverityAndStatus(
-                command.plotId(), alert.getSeverity(), AlertStatus.OPEN)) {
+        boolean alreadyCovered = salinityAlertRepository.findLatestByPlotId(command.plotId())
+                .map(latest -> latest.stillCovers(candidate.getSeverity()))
+                .orElse(false);
+        if (alreadyCovered) {
             return;
         }
 
-        alert = salinityAlertRepository.save(alert);
+        SalinityAlert alert = salinityAlertRepository.save(candidate);
         notifyPlotOwner(alert);
     }
 
