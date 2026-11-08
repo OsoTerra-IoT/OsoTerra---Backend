@@ -17,4 +17,15 @@ public interface SubscriptionBillingQueryService {
     Optional<Subscription> findSubscriptionById(SubscriptionId id);
 
     List<Subscription> findSubscriptionsByUserAccountId(Long userAccountId);
+
+    /**
+     * The plot limit of the account's active subscription (the largest one when several are
+     * active), or empty when the account has no active subscription.
+     */
+    Optional<Integer> findPlotLimitByUserAccountId(Long userAccountId);
+
+    /**
+     * How much of the plot quota the account really uses: its active plots, counted when asked.
+     */
+    int findConsumedQuotaByUserAccountId(Long userAccountId);
 }

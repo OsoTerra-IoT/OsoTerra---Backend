@@ -50,26 +50,33 @@ class SubscriptionController {
             @Valid @RequestBody RequestSubscriptionResource request, @CurrentUserId Long userAccountId) {
         Subscription subscription = requestSubscriptionCommandService.handle(
                 new RequestSubscriptionCommand(userAccountId, request.subscriptionPlanId()));
-        return ResponseEntity.status(HttpStatus.CREATED).body(subscriptionResourceAssembler.toResource(subscription));
+        return ResponseEntity.status(HttpStatus.CREATED).body(toResource(subscription));
     }
 
     @PostMapping("/{id}/cancellation")
     ResponseEntity<SubscriptionResource> cancel(@PathVariable Long id, @CurrentUserId Long userAccountId) {
         ownSubscription(id, userAccountId);
         Subscription subscription = cancelSubscriptionCommandService.handle(new CancelSubscriptionCommand(id));
-        return ResponseEntity.ok(subscriptionResourceAssembler.toResource(subscription));
+        return ResponseEntity.ok(toResource(subscription));
     }
 
     @GetMapping("/mine")
     List<SubscriptionResource> mine(@CurrentUserId Long userAccountId) {
+        int consumed = subscriptionBillingQueryService.findConsumedQuotaByUserAccountId(userAccountId);
         return subscriptionBillingQueryService.findSubscriptionsByUserAccountId(userAccountId).stream()
-                .map(subscriptionResourceAssembler::toResource)
+                .map(subscription -> subscriptionResourceAssembler.toResource(subscription, consumed))
                 .toList();
     }
 
     @GetMapping("/{id}")
     SubscriptionResource getById(@PathVariable Long id, @CurrentUserId Long userAccountId) {
-        return subscriptionResourceAssembler.toResource(ownSubscription(id, userAccountId));
+        return toResource(ownSubscription(id, userAccountId));
+    }
+
+    private SubscriptionResource toResource(Subscription subscription) {
+        return subscriptionResourceAssembler.toResource(
+                subscription,
+                subscriptionBillingQueryService.findConsumedQuotaByUserAccountId(subscription.getUserAccountId()));
     }
 
     private Subscription ownSubscription(Long id, Long userAccountId) {
