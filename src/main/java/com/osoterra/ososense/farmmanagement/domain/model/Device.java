@@ -23,7 +23,7 @@ public final class Device extends AggregateRoot<DeviceId> {
     private PlotId plotId;
     private final String activationCode;
     private DeviceStatus status;
-    private final BigDecimal calibrationFactor;
+    private BigDecimal calibrationFactor;
     private final Integer batteryLevel;
     private final String firmwareVersion;
     private final int readingIntervalMinutes;
@@ -94,6 +94,18 @@ public final class Device extends AggregateRoot<DeviceId> {
         if (status == DeviceStatus.OFFLINE) {
             this.status = DeviceStatus.ACTIVE;
         }
+    }
+
+    /**
+     * A laboratory calibration produced a new correction factor: the device adopts it for
+     * the readings it compensates from now on.
+     */
+    public void applyCalibrationFactor(BigDecimal factor) {
+        Objects.requireNonNull(factor, "factor");
+        if (factor.signum() <= 0) {
+            throw new IllegalArgumentException("A device's calibration factor must be greater than zero");
+        }
+        this.calibrationFactor = factor;
     }
 
     public Optional<PlotId> getPlotId() {

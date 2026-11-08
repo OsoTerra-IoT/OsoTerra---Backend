@@ -3,13 +3,17 @@ package com.osoterra.ososense.soilmonitoring.application.acl;
 import com.osoterra.ososense.farmmanagement.domain.model.Device;
 import com.osoterra.ososense.farmmanagement.domain.model.DeviceId;
 import com.osoterra.ososense.farmmanagement.domain.model.PlotId;
+import com.osoterra.ososense.farmmanagement.domain.services.ApplyDeviceCalibrationCommand;
+import com.osoterra.ososense.farmmanagement.domain.services.ApplyDeviceCalibrationCommandService;
 import com.osoterra.ososense.farmmanagement.domain.services.FarmManagementQueryService;
 import com.osoterra.ososense.farmmanagement.domain.services.RecordDeviceActivityCommand;
 import com.osoterra.ososense.farmmanagement.domain.services.RecordDeviceActivityCommandService;
 import com.osoterra.ososense.soilmonitoring.domain.gateways.DeviceActivityRecorder;
+import com.osoterra.ososense.soilmonitoring.domain.gateways.DeviceCalibrationUpdater;
 import com.osoterra.ososense.soilmonitoring.domain.gateways.DeviceLocationLookup;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -19,16 +23,19 @@ import java.util.Optional;
  * readings back, without exposing Farm Management's domain types any further than this class.
  */
 @Component
-class FarmManagementDeviceClient implements DeviceLocationLookup, DeviceActivityRecorder {
+class FarmManagementDeviceClient implements DeviceLocationLookup, DeviceActivityRecorder, DeviceCalibrationUpdater {
 
     private final FarmManagementQueryService farmManagementQueryService;
     private final RecordDeviceActivityCommandService recordDeviceActivityCommandService;
+    private final ApplyDeviceCalibrationCommandService applyDeviceCalibrationCommandService;
 
     FarmManagementDeviceClient(
             FarmManagementQueryService farmManagementQueryService,
-            RecordDeviceActivityCommandService recordDeviceActivityCommandService) {
+            RecordDeviceActivityCommandService recordDeviceActivityCommandService,
+            ApplyDeviceCalibrationCommandService applyDeviceCalibrationCommandService) {
         this.farmManagementQueryService = farmManagementQueryService;
         this.recordDeviceActivityCommandService = recordDeviceActivityCommandService;
+        this.applyDeviceCalibrationCommandService = applyDeviceCalibrationCommandService;
     }
 
     @Override
@@ -49,5 +56,10 @@ class FarmManagementDeviceClient implements DeviceLocationLookup, DeviceActivity
     @Override
     public void recordReading(Long deviceId, LocalDateTime capturedAt) {
         recordDeviceActivityCommandService.handle(new RecordDeviceActivityCommand(deviceId, capturedAt));
+    }
+
+    @Override
+    public void applyCalibrationFactor(Long deviceId, BigDecimal calibrationFactor) {
+        applyDeviceCalibrationCommandService.handle(new ApplyDeviceCalibrationCommand(deviceId, calibrationFactor));
     }
 }
