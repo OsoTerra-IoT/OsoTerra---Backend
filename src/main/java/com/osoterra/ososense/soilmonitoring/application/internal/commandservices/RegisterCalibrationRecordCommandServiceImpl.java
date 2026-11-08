@@ -1,5 +1,6 @@
 package com.osoterra.ososense.soilmonitoring.application.internal.commandservices;
 
+import com.osoterra.ososense.soilmonitoring.domain.gateways.DeviceCalibrationUpdater;
 import com.osoterra.ososense.soilmonitoring.domain.model.CalibrationRecord;
 import com.osoterra.ososense.soilmonitoring.domain.repositories.CalibrationRecordRepository;
 import com.osoterra.ososense.soilmonitoring.domain.services.RegisterCalibrationRecordCommand;
@@ -13,8 +14,12 @@ class RegisterCalibrationRecordCommandServiceImpl implements RegisterCalibration
 
     private final CalibrationRecordRepository calibrationRecordRepository;
 
-    RegisterCalibrationRecordCommandServiceImpl(CalibrationRecordRepository calibrationRecordRepository) {
+    private final DeviceCalibrationUpdater deviceCalibrationUpdater;
+
+    RegisterCalibrationRecordCommandServiceImpl(
+            CalibrationRecordRepository calibrationRecordRepository, DeviceCalibrationUpdater deviceCalibrationUpdater) {
         this.calibrationRecordRepository = calibrationRecordRepository;
+        this.deviceCalibrationUpdater = deviceCalibrationUpdater;
     }
 
     @Override
@@ -22,6 +27,8 @@ class RegisterCalibrationRecordCommandServiceImpl implements RegisterCalibration
         CalibrationRecord record = CalibrationRecord.register(
                 command.deviceId(), command.labConductivityDsM(), command.samplingDate(), command.laboratoryName(),
                 command.deviceReadingAtSampling());
-        return calibrationRecordRepository.save(record);
+        CalibrationRecord saved = calibrationRecordRepository.save(record);
+        deviceCalibrationUpdater.applyCalibrationFactor(saved.getDeviceId(), saved.getResultingFactor());
+        return saved;
     }
 }

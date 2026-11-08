@@ -90,4 +90,22 @@ class DeviceTest {
     void registerWithActivationCodeUsesTheFirmwareReadingInterval() {
         assertThat(Device.registerWithActivationCode("ACT-0008").getReadingIntervalMinutes()).isEqualTo(15);
     }
+
+    @Test
+    void applyCalibrationFactorReplacesTheDefaultFactor() {
+        Device device = Device.registerWithActivationCode("ACT-0010");
+
+        device.applyCalibrationFactor(new java.math.BigDecimal("0.8000"));
+
+        assertThat(device.getCalibrationFactor()).isEqualByComparingTo("0.8");
+    }
+
+    @Test
+    void applyCalibrationFactorRejectsAFactorThatIsNotPositive() {
+        Device device = Device.registerWithActivationCode("ACT-0011");
+
+        assertThatThrownBy(() -> device.applyCalibrationFactor(java.math.BigDecimal.ZERO))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(device.getCalibrationFactor()).isEqualByComparingTo("1");
+    }
 }

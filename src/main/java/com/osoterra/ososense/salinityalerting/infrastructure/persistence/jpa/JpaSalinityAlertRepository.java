@@ -1,7 +1,5 @@
 package com.osoterra.ososense.salinityalerting.infrastructure.persistence.jpa;
 
-import com.osoterra.ososense.salinityalerting.domain.model.AlertSeverity;
-import com.osoterra.ososense.salinityalerting.domain.model.AlertStatus;
 import com.osoterra.ososense.salinityalerting.domain.model.SalinityAlert;
 import com.osoterra.ososense.salinityalerting.domain.model.SalinityAlertId;
 import com.osoterra.ososense.salinityalerting.domain.repositories.SalinityAlertRepository;
@@ -36,7 +34,8 @@ class JpaSalinityAlertRepository implements SalinityAlertRepository {
     }
 
     @Override
-    public boolean existsByPlotIdAndSeverityAndStatus(Long plotId, AlertSeverity severity, AlertStatus status) {
-        return springDataRepository.existsByPlotIdAndSeverityAndStatus(plotId, severity, status);
+    public Optional<SalinityAlert> findLatestByPlotId(Long plotId) {
+        return springDataRepository.findFirstByPlotIdOrderByGeneratedAtDescIdDesc(plotId)
+                .map(SalinityAlertMapper::toDomain);
     }
 }
