@@ -20,3 +20,12 @@ El código está organizado por bounded context, cada uno en su paquete bajo `co
 | `shared` | — | — | Clases base del dominio y soporte REST común. |
 
 Dentro de cada contexto se repiten las capas `domain`, `application`, `infrastructure` e `interfaces`.
+
+## Tecnologías
+
+- Java 17 y Spring Boot 4 (Web MVC, Data JPA, Security, Validation, Mail)
+- PostgreSQL con migraciones de Flyway (`src/main/resources/db/migration`)
+- JWT (jjwt) y Google Sign-In para la autenticación
+- Stripe para las suscripciones
+- springdoc-openapi para la documentación en Swagger UI
+- JUnit 5, AssertJ, embedded-postgres y Cucumber 8 para las pruebas
