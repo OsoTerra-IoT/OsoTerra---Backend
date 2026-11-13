@@ -109,10 +109,18 @@ public final class UserAccount extends AggregateRoot<UserAccountId> {
         return new UserAccount(id, email, passwordHash, googleAccountId, name, role, license, isActive, createdAt);
     }
 
+    /**
+     * Checks a raw password against the stored hash. Always returns {@code false} for an
+     * account that only signs in with Google, because it has no local password.
+     */
     public boolean verifyPassword(String rawPassword, PasswordHashingService hashingService) {
         return passwordHash != null && hashingService.matches(rawPassword, passwordHash);
     }
 
+    /**
+     * Replaces the stored hash, for example after a password reset. The caller must hash
+     * the new password first.
+     */
     public void changePassword(PasswordHash newHash) {
         this.passwordHash = newHash;
     }
@@ -130,6 +138,9 @@ public final class UserAccount extends AggregateRoot<UserAccountId> {
         return role == UserRole.ADVISOR;
     }
 
+    /**
+     * Marks the account as inactive without deleting it.
+     */
     public void deactivate() {
         this.isActive = false;
     }
