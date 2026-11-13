@@ -29,3 +29,23 @@ Dentro de cada contexto se repiten las capas `domain`, `application`, `infrastru
 - Stripe para las suscripciones
 - springdoc-openapi para la documentación en Swagger UI
 - JUnit 5, AssertJ, embedded-postgres y Cucumber 8 para las pruebas
+
+## Ejecutar en local
+
+Requisitos: JDK 17 o superior y una base PostgreSQL.
+
+1. Crea la base y el usuario que usa la configuración por defecto:
+
+   ```sql
+   CREATE USER ososense WITH PASSWORD 'ososense';
+   CREATE DATABASE ososense OWNER ososense;
+   ```
+
+2. Copia `.env.example` y ajusta los valores si tu base es distinta.
+3. Levanta el API:
+
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+Flyway aplica las migraciones al arrancar. El API queda en `http://localhost:8080` y Swagger UI en `http://localhost:8080/swagger-ui.html`.
