@@ -49,3 +49,19 @@ Requisitos: JDK 17 o superior y una base PostgreSQL.
    ```
 
 Flyway aplica las migraciones al arrancar. El API queda en `http://localhost:8080` y Swagger UI en `http://localhost:8080/swagger-ui.html`.
+
+## Variables de entorno
+
+Todas tienen un valor por defecto para desarrollo local, salvo las de servicios externos.
+
+| Variable | Uso | Valor por defecto |
+|---|---|---|
+| `PORT` | Puerto HTTP (Railway lo asigna) | `8080` |
+| `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` | Conexión a PostgreSQL. Si no están, se usan las variables `PG*` que inyecta Railway | base `ososense` en `localhost:5432` |
+| `JWT_SECRET` | Clave para firmar los JWT. **Obligatoria fuera de local** | clave de desarrollo |
+| `JWT_EXPIRATION_MINUTES` | Vigencia del token | `60` |
+| `EDGE_API_KEY` | Clave que el Edge Service envía en la cabecera `X-Edge-Api-Key` | `local-edge-key` |
+| `CORS_ALLOWED_ORIGINS` | Orígenes que pueden llamar al API desde el navegador | localhost, GitHub Pages y Vercel |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM` | Servidor SMTP para los correos de alertas y de recuperación de contraseña | `localhost:1025` |
+| `GOOGLE_CLIENT_ID` | Inicio de sesión con Google | vacío |
+| `STRIPE_WEBHOOK_SECRET` | Firma de los webhooks de Stripe | vacío |
