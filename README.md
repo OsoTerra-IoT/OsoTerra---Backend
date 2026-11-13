@@ -65,3 +65,23 @@ Todas tienen un valor por defecto para desarrollo local, salvo las de servicios 
 | `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM` | Servidor SMTP para los correos de alertas y de recuperación de contraseña | `localhost:1025` |
 | `GOOGLE_CLIENT_ID` | Inicio de sesión con Google | vacío |
 | `STRIPE_WEBHOOK_SECRET` | Firma de los webhooks de Stripe | vacío |
+
+## Pruebas
+
+```bash
+./mvnw test
+```
+
+La suite incluye:
+
+- **Pruebas unitarias del dominio**, por bounded context, en `src/test/java/.../<contexto>/domain`.
+- **Pruebas de integración** del flujo principal y del flujo del asesor, que levantan una base PostgreSQL embebida (embedded-postgres).
+- **Pruebas de aceptación con Cucumber**: los escenarios en Gherkin están en `src/test/resources/features` y los pasos en el paquete `acceptance`.
+
+## Despliegue
+
+El API está desplegado en **Railway** junto con su base PostgreSQL. Railway asigna `PORT` e inyecta las variables `PG*`, así que basta con definir `JWT_SECRET`, `EDGE_API_KEY` y las credenciales de los servicios externos.
+
+## Flujo de trabajo
+
+Usamos **GitFlow**: cada cambio sale de `develop` en una rama `feature/*`, entra por pull request revisado por otro integrante, y las versiones pasan a `main` mediante ramas `release/*`. Los mensajes de commit siguen **Conventional Commits** (`feat`, `fix`, `docs`, `test`, `refactor`, `chore`).
