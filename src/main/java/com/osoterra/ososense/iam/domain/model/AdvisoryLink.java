@@ -59,6 +59,12 @@ public final class AdvisoryLink extends AggregateRoot<AdvisoryLinkId> {
         return new AdvisoryLink(id, advisorId, farmerId, status, requestedAt, respondedAt);
     }
 
+    /**
+     * Records the farmer's consent: moves a pending link to {@link LinkStatus#ACCEPTED}
+     * and raises {@link AdvisoryLinkAcceptedEvent}.
+     *
+     * @throws BusinessRuleViolationException if the link is not pending
+     */
     public void accept() {
         if (status != LinkStatus.PENDING) {
             throw new BusinessRuleViolationException("Only a pending advisory link can be accepted");
@@ -68,6 +74,12 @@ public final class AdvisoryLink extends AggregateRoot<AdvisoryLinkId> {
         registerEvent(new AdvisoryLinkAcceptedEvent(id, advisorId, farmerId, Instant.now()));
     }
 
+    /**
+     * Ends the supervision, whether it was pending or accepted, and raises
+     * {@link AdvisoryLinkRevokedEvent}.
+     *
+     * @throws BusinessRuleViolationException if the link is already revoked
+     */
     public void revoke() {
         if (status == LinkStatus.REVOKED) {
             throw new BusinessRuleViolationException("The advisory link is already revoked");
@@ -77,6 +89,10 @@ public final class AdvisoryLink extends AggregateRoot<AdvisoryLinkId> {
         registerEvent(new AdvisoryLinkRevokedEvent(id, advisorId, farmerId, Instant.now()));
     }
 
+    /**
+     * Returns {@code true} only while the link is accepted, which is when the advisor may
+     * see the farmer's plots.
+     */
     public boolean isActive() {
         return status == LinkStatus.ACCEPTED;
     }
