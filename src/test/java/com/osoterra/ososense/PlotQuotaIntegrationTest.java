@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 /**
  * The active subscription plan caps the owner's active plots, and the subscription reports
- * the real consumption. Without an active subscription there is no limit (current behaviour).
+ * the real consumption. Without an active subscription the free plan's limit applies.
  */
 @AutoConfigureMockMvc
 class PlotQuotaIntegrationTest extends IntegrationTest {
@@ -53,13 +53,28 @@ class PlotQuotaIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    void ownerWithoutAnActiveSubscriptionKeepsTheCurrentUnlimitedBehaviour() throws Exception {
+    void ownerWithoutAnActiveSubscriptionGetsTheFreePlanLimit() throws Exception {
         String token = signUpAndSignIn("quota.none@example.com");
         Integer farmId = createFarm(token);
 
-        for (int i = 1; i <= 3; i++) {
-            createPlot(token, farmId, "Parcela " + i, status().isCreated());
-        }
+        createPlot(token, farmId, "Parcela 1", status().isCreated());
+        createPlot(token, farmId, "Parcela 2", status().isCreated());
+        createPlot(token, farmId, "Parcela 3", status().isConflict());
+    }
+
+    @Test
+    void cancellingTheFreePlanDoesNotLiftTheLimit() throws Exception {
+        String token = signUpAndSignIn("quota.cancelled@example.com");
+        String subscription = body(mvc.perform(auth(json(post("/api/v1/subscriptions"), """
+                {"subscriptionPlanId":%d}""".formatted(planId("Free"))), token)).andExpect(status().isCreated()));
+        Integer subscriptionId = JsonPath.read(subscription, "$.id");
+        mvc.perform(auth(post("/api/v1/subscriptions/" + subscriptionId + "/cancellation"), token))
+                .andExpect(status().isOk());
+        Integer farmId = createFarm(token);
+
+        createPlot(token, farmId, "Parcela 1", status().isCreated());
+        createPlot(token, farmId, "Parcela 2", status().isCreated());
+        createPlot(token, farmId, "Parcela 3", status().isConflict());
     }
 
     private Integer planId(String name) throws Exception {

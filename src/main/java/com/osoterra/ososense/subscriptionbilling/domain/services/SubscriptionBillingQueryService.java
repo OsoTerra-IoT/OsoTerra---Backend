@@ -20,7 +20,8 @@ public interface SubscriptionBillingQueryService {
 
     /**
      * The plot limit of the account's active subscription (the largest one when several are
-     * active), or empty when the account has no active subscription.
+     * active). Without an active subscription, the limit of the free plan; empty only when the
+     * catalog has no active free plan.
      */
     Optional<Integer> findPlotLimitByUserAccountId(Long userAccountId);
 

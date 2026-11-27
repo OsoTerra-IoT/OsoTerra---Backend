@@ -54,11 +54,21 @@ class SubscriptionBillingQueryServiceImpl implements SubscriptionBillingQuerySer
     @Override
     public Optional<Integer> findPlotLimitByUserAccountId(Long userAccountId) {
         LocalDate today = LocalDate.now();
-        return subscriptionRepository.findByUserAccountId(userAccountId).stream()
+        Optional<Integer> subscribed = subscriptionRepository.findByUserAccountId(userAccountId).stream()
                 .filter(subscription -> subscription.getStatus() == SubscriptionStatus.ACTIVE)
                 .filter(subscription -> subscription.getPeriodEndDate().map(end -> !end.isBefore(today)).orElse(true))
                 .map(Subscription::getQuotaTotal)
                 .max(Comparator.naturalOrder());
+        // Without an active subscription (a new account, or one that cancelled its plan) the free
+        // plan's limit applies; otherwise cancelling the free plan would lift every limit.
+        return subscribed.or(this::findFreePlanLimit);
+    }
+
+    private Optional<Integer> findFreePlanLimit() {
+        return subscriptionPlanRepository.findByIsActiveTrue().stream()
+                .filter(SubscriptionPlan::isFree)
+                .map(SubscriptionPlan::getMaxPlots)
+                .min(Comparator.naturalOrder());
     }
 
     @Override
