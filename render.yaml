@@ -1,0 +1,31 @@
+# Render Blueprint: the RESTful API and its PostgreSQL on the free plan.
+# Render generates JWT_SECRET and EDGE_API_KEY and passes the database as DATABASE_URL,
+# which PlatformDatabaseUrl turns into the datasource settings.
+databases:
+  - name: ososense-db
+    plan: free
+    region: virginia
+    databaseName: ososense
+    user: ososense
+
+services:
+  - type: web
+    name: ososense-backend
+    runtime: docker
+    plan: free
+    region: virginia
+    branch: deploy/render
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ososense-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: EDGE_API_KEY
+        generateValue: true
+      # Peruvian product: the API keeps its dates (LocalDateTime) in Lima time, which the apps show as is;
+      # the Edge Service sends capturedAt in local time (PLATFORM_TIMEZONE=local).
+      - key: TZ
+        value: America/Lima
