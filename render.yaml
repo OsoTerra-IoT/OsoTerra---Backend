@@ -25,3 +25,7 @@ services:
         generateValue: true
       - key: EDGE_API_KEY
         generateValue: true
+      # Peruvian product: the API keeps its dates (LocalDateTime) in Lima time, which the apps show as is;
+      # the Edge Service sends capturedAt in local time (PLATFORM_TIMEZONE=local).
+      - key: TZ
+        value: America/Lima
